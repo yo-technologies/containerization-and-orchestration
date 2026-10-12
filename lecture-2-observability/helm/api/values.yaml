@@ -1,0 +1,4 @@
+image: lab-api:0.1
+otel:
+  serviceName: api
+  endpoint: http://jaeger:4318

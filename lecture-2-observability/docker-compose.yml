@@ -1,0 +1,124 @@
+# Local observability stack. Uses Docker Compose v2.
+# Start: docker compose up -d
+# Grafana: admin / admin (override GRAFANA_ADMIN_PASSWORD before first start).
+# All published ports are bound to localhost.
+# Jaeger uses in-memory storage: traces are lost when it restarts.
+# Applications must send logs to Loki and OTLP traces to Jaeger themselves.
+name: observability
+
+services:
+  api:
+    build:
+      context: ./api
+    restart: unless-stopped
+    environment:
+      PORT: "8080"
+      OTEL_SERVICE_NAME: api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+    ports:
+      - "127.0.0.1:8081:8080"
+    depends_on:
+      - jaeger
+
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - prometheus_data:/prometheus
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+      - source: prometheus_rules
+        target: /etc/prometheus/alerts.yml
+
+  grafana:
+    image: grafana/grafana:13.2.3
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_METRICS_ENABLED: "true"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    configs:
+      - source: grafana_datasources
+        target: /etc/grafana/provisioning/datasources/datasources.yml
+    depends_on:
+      - prometheus
+      - loki
+      - jaeger
+      - alertmanager
+
+  loki:
+    image: grafana/loki:3.7.0
+    restart: unless-stopped
+    command:
+      - -config.file=/etc/loki/config.yml
+    ports:
+      - "127.0.0.1:3100:3100"
+    volumes:
+      - loki_data:/loki
+    configs:
+      - source: loki_config
+        target: /etc/loki/config.yml
+
+  jaeger:
+    image: cr.jaegertracing.io/jaegertracing/jaeger:2.21.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:16686:16686" # Jaeger UI / query API
+      - "127.0.0.1:4317:4317"   # OTLP gRPC
+      - "127.0.0.1:4318:4318"   # OTLP HTTP (/v1/traces)
+
+  alertmanager:
+    image: prom/alertmanager:v0.34.1
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+      - --cluster.listen-address=
+    ports:
+      - "127.0.0.1:9093:9093"
+    volumes:
+      - alertmanager_data:/alertmanager
+    configs:
+      - source: alertmanager_config
+        target: /etc/alertmanager/alertmanager.yml
+
+  karma:
+    image: ghcr.io/prymitive/karma:v0.133
+    restart: unless-stopped
+    environment:
+      ALERTMANAGER_URI: http://alertmanager:9093
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - alertmanager
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  alertmanager_data:
+
+
+configs:
+  prometheus_config:
+    file: ./configs/prometheus/prometheus.yml
+  prometheus_rules:
+    file: ./configs/prometheus/alerts.yml
+  alertmanager_config:
+    file: ./configs/alertmanager/alertmanager.yml
+  loki_config:
+    file: ./configs/loki/loki.yml
+  grafana_datasources:
+    file: ./configs/grafana/datasources.yml

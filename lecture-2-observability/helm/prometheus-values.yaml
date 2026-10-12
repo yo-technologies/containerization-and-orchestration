@@ -1,0 +1,91 @@
+server:
+  global:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+
+alertmanager:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 1Gi
+  config:
+    route:
+      receiver: local-webhook
+      group_by: [alertname, service]
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 1h
+    receivers:
+      - name: local-webhook
+        webhook_configs:
+          - url: http://alert-webhook:8080/
+            send_resolved: true
+
+kube-state-metrics:
+  enabled: false
+
+prometheus-node-exporter:
+  enabled: false
+
+prometheus-pushgateway:
+  enabled: false
+
+extraScrapeConfigs: |
+  - job_name: api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:8080"]
+
+  - job_name: api-health
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+      target: ["http://api:8080/health"]
+    static_configs:
+      - targets: ["blackbox:9115"]
+        labels:
+          service: api
+
+serverFiles:
+  alerting_rules.yml:
+    groups:
+      - name: api
+        rules:
+          - alert: APIHighErrorRate
+            expr: |
+              (
+                (sum(rate(http_errors_total{job="api"}[1m])) or vector(0))
+                /
+                sum(rate(http_requests_total{job="api"}[1m]))
+              ) > 0.05
+            for: 2m
+            labels:
+              severity: critical
+              service: api
+            annotations:
+              summary: "API: доля 5xx выше 5%"
+              description: "Проверить логи ошибок, трассировки и последние изменения API."
+          - alert: APIHighLatency
+            expr: |
+              histogram_quantile(
+                0.95,
+                sum by (le) (
+                  rate(http_request_duration_seconds_bucket{job="api", code=~"2.."}[1m])
+                )
+              ) > 1
+            for: 2m
+            labels:
+              severity: critical
+              service: api
+            annotations:
+              summary: "API: p95 успешных запросов выше 1 секунды"
+              description: "Найти медленные операции в Jaeger; проверить зависимости, ресурсы и последние изменения."
+          - alert: APIUnavailable
+            expr: probe_success{job="api-health"} == 0
+            for: 1m
+            labels:
+              severity: critical
+              service: api
+            annotations:
+              summary: "API: /health недоступен больше минуты"
+              description: "Проверить Pod API, готовность endpoints Service и сетевую доступность."

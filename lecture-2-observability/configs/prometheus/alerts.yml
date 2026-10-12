@@ -1,0 +1,11 @@
+groups:
+  - name: availability
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Prometheus scrape target is unavailable'
+          description: 'Scraping has failed for more than one minute. See the instance and job labels.'

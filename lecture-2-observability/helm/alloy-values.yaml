@@ -1,0 +1,48 @@
+controller:
+  type: daemonset
+  volumes:
+    extra:
+      - name: alloy-data
+        hostPath:
+          path: /var/lib/alloy
+          type: DirectoryOrCreate
+
+alloy:
+  storagePath: /var/lib/alloy
+  mounts:
+    varlog: true
+    extra:
+      - name: alloy-data
+        mountPath: /var/lib/alloy
+  configMap:
+    content: |
+      loki.source.file "api_logs" {
+        targets = [{
+          __path__  = "/var/log/pods/observability_api-*/api/*.log",
+          app       = "api",
+          namespace = "observability",
+        }]
+        file_match {
+          enabled = true
+        }
+        tail_from_end = true
+        forward_to = [loki.process.api_logs.receiver]
+      }
+
+      loki.process "api_logs" {
+        stage.cri {}
+        forward_to = [loki.write.local.receiver]
+      }
+
+      loki.write "local" {
+        endpoint {
+          url = "http://loki:3100/loki/api/v1/push"
+        }
+      }
+
+crds:
+  create: false
+rbac:
+  create: false
+serviceAccount:
+  automountServiceAccountToken: false

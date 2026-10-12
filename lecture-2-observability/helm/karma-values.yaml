@@ -1,0 +1,10 @@
+configMap:
+  enabled: true
+  rawConfig:
+    alertmanager:
+      interval: 15s
+      servers:
+        - name: kind
+          uri: http://prometheus-alertmanager:9093
+          timeout: 5s
+          proxy: true

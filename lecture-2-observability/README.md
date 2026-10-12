@@ -1,160 +1,799 @@
-# Lecture 2 — Observability and monitoring
+# Лабораторная работа № 2 — Наблюдаемость HTTP-сервиса
 
-You can set up containers, the cluster, and networking perfectly, but if you can't see what happens inside, you learn about problems from angry users instead of your own graphs. This lecture answers how "sight" works in Kubernetes: where metrics come from, how to collect logs from all pods, how to trace one request across many services, and — most importantly — what to watch and what to page on. Monitoring comes early in the course — right after Docker: it's mandatory in every later lab, so it runs as a cross-cutting theme. The running example stays the same — the online shop `shop` with services `api` (×3), `worker`, and `postgres`.
+> Шаблон отчёта: факты и скриншоты внесены, объяснения нужно раскрыть самостоятельно. Перед сдачей заполнить поля «Дополнить» и убрать эту заметку.
 
----
+**Автор:** [ФИО]
+**Группа:** [группа]
+**Дата:** [дата сдачи]
 
-## Block 1. Metrics
+Задание: [lab.md](lab.md). Исходный материал лекции: [lecture.md](lecture.md).
 
-### Monitoring vs observability
+Запуск собранного стека для команды: [scripts/setup-observability.sh](scripts/setup-observability.sh). Требования, параметры и подключение метрик следующих лабораторных описаны в [scripts/README.md](scripts/README.md).
 
-Two words that get confused. Monitoring: we pick known indicators in advance and set alarms ("CPU above 90% — send an alert"). It answers "is everything OK?" and is good for problems we foresaw. Observability: the broader ability to understand what happens inside a system from the signals it emits, even when the problem is new and unforeseen. It answers "why did this particular thing break?". Monitoring says "the service is unhealthy"; good observability lets you find out why without adding new code for every case. A real system needs both.
+```bash
+bash scripts/setup-observability.sh
+```
 
-### The three pillars
+## 1. Цель работы
 
-- Metrics — numbers over time (requests per second, latency, memory). Answer WHAT happens and when. Cheap and compact — good for trends and alerts.
-- Logs — text records of application events ("could not connect to the database"). Answer WHY.
-- Traces — the path of one request across many services. Answer WHERE the bottleneck is.
+Развернуть в Kubernetes стек наблюдаемости для HTTP API: метрики, логи, трассировки и уведомления о критических состояниях. Проверить его на искусственно вызванных ошибках, задержках и недоступности.
 
-Their power is in the combination. Typical investigation: a metric shows error rate rising in `api` (what) → a trace shows requests stalling on the call to `postgres` (where) → the `postgres` log explains it ran out of connections (why).
+**Дополнить:** какие вопросы об API позволяют решать метрики, логи и трассы; зачем использовать их совместно.
 
-### What we want to see in shop
+## 2. Окружение и архитектура
 
-Metrics — load and health of each service and node; logs — what the services write, which errors; cluster events — why a pod didn't start, who got evicted, what restarted; traces — where time is lost when an order is slow.
+Кластер — kind `observability`, контекст — `kind-observability`, namespace — `observability`. Компоненты приложения и мониторинга развёрнуты через Helm. Docker Compose не используется как окружение сдаваемой лабораторной.
 
-### What a metric is
+```mermaid
+flowchart LR
+    API[Go API] -->|JSON stdout| Files[Файлы логов на ноде]
+    Files --> Alloy
+    Alloy --> Loki
+    Prometheus -->|GET /metrics| API
+    API -->|OTLP HTTP :4318| Jaeger
+    Prometheus -->|GET /probe| Blackbox
+    Blackbox -->|GET /health| API
+    Grafana --> Prometheus
+    Grafana --> Loki
+    Prometheus -->|firing / resolved| Alertmanager
+    Alertmanager -->|HTTP webhook| Webhook[alert-webhook]
+    Karma -->|API активных алертов| Alertmanager
+```
 
-A metric is a numeric value measured over time, e.g. "requests per second to `api`": 120 at 10:00, 350 at 13:00. Technically this sequence of "time → value" pairs is a time series. A metric has labels — qualifiers in braces: `http_requests_total{service="api", code="500"}` is the counter of requests to `api` with response code 500. Labels let you slice one metric by service, code, node. Because metrics are cheap and compact (just numbers), you store them for a long time, see week-long trends, and hang alerts on them.
+**Дополнить:** объяснить направления запросов, роль Service/DNS и отличие сборщика от хранилища.
 
-### Prometheus and the pull model
+| Компонент | Конфигурация |
+| --- | --- |
+| API | [Helm chart](helm/api/Chart.yaml), [values](helm/api/values.yaml), [Deployment](helm/api/templates/deployment.yaml), [Service](helm/api/templates/service.yaml) |
+| Prometheus и Alertmanager | [prometheus-values.yaml](helm/prometheus-values.yaml) |
+| Grafana | [grafana-values.yaml](helm/grafana-values.yaml) |
+| Loki | [loki-values.yaml](helm/loki-values.yaml) |
+| Alloy | [alloy-values.yaml](helm/alloy-values.yaml) |
+| Jaeger | [jaeger-values.yaml](helm/jaeger-values.yaml) |
+| Blackbox exporter | [blackbox-values.yaml](helm/blackbox-values.yaml) |
+| Karma | [karma-values.yaml](helm/karma-values.yaml) |
+| Получатель webhook | [Helm chart](helm/webhook/Chart.yaml), [Deployment и Service](helm/webhook/templates/resources.yaml) |
 
-Prometheus is the de facto standard for metrics in Kubernetes. It stores time series and queries them. Its collection model is pull: Prometheus itself periodically (say every 15 s) goes to each target and fetches its metrics. Each target — an app or component — simply exposes an HTTP endpoint (by convention `/metrics`) and serves its current metrics as plain text. Prometheus reads that endpoint — this act is called a scrape. In Kubernetes it also discovers what to scrape via service discovery. The opposite is push (services send metrics themselves). Pull is convenient because Prometheus immediately sees when a target fails to answer (it's down); with push, a silent service is easily confused with a healthy one that simply sends nothing.
+Фактические версии проверены по установленным релизам 11.10.2026: Kubernetes `v1.37.0`, runtime ноды `containerd 2.3.4`, архитектура `arm64`.
 
-### Where metrics come from in Kubernetes
+| Релиз | Helm chart | Версия приложения из metadata chart |
+| --- | --- | --- |
+| api | lab-api 0.1.0 | образ lab-api:0.1 |
+| prometheus | prometheus 29.35.0 | v3.15.0 |
+| grafana | grafana 13.3.1 | 13.2.3 |
+| loki | loki 18.15.0 | 3.7.8 |
+| alloy | alloy 1.13.1 | v1.20.1 |
+| jaeger | jaeger 4.14.1 | 2.21.0 |
+| alert-webhook | alert-webhook 0.1.0 | образ mendhak/http-https-echo:42 |
+| karma | karma 2.13.1 | v0.131 |
+| blackbox | prometheus-blackbox-exporter 11.20.0 | v0.29.0 |
+
+**Дополнить:** почему для повторяемого развёртывания важны версии charts и образов. Список релизов:
+
+```bash
+helm list --kube-context kind-observability -n observability
+```
+
+## 3. Развёртывание
+
+Образ API `lab-api:0.1` загружен в kind. API и мониторинг установлены в одном namespace. Для доступа к интерфейсам с компьютера используется `kubectl port-forward`.
+
+Команды ниже восстановлены из шагов этой лабораторной и сгруппированы по назначению. Файлы values сейчас содержат итоговую конфигурацию; в ходе работы они дополнялись поэтапно. Повторные установки и обновления приведены там, где менялась конфигурация. Это справочник отдельных шагов, а не один автоматически выполняемый скрипт.
+
+**Дополнить:** объяснить порядок и зависимости компонентов, причины выбора параметров и результаты проверок.
+
+### 3.1. Кластер, образ и загрузка в kind
+
+Начальная подготовка окружения и загрузка образа API в runtime ноды.
+
+```bash
+brew install kind
+kind create cluster --name observability --wait 120s
+```
+
+```bash
+kubectl --context kind-observability get nodes
+kubectl --context kind-observability get pods -n kube-system
+```
+
+```bash
+cd /Users/timur/Documents/ITMO/containerization-and-orchestration/lecture-2-observability
+
+docker build -t lab-api:0.1 ./api
+kind load docker-image lab-api:0.1 --name observability
+```
+
+### 3.2. Локальный Helm chart API
+
+Проверка шаблонов и создание namespace при первой установке API.
+
+```bash
+helm lint ./helm/api
+helm template api ./helm/api
+```
+
+```bash
+helm upgrade --install api ./helm/api \
+  --kube-context kind-observability \
+  --namespace observability \
+  --create-namespace \
+  --wait \
+  --timeout 2m
+```
+
+### 3.3. Prometheus и Grafana
+
+Добавление repositories и первые установки. Итоговые правила Alertmanager входят в values Prometheus.
+
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+helm upgrade --install prometheus prometheus-community/prometheus \
+  --version 29.35.0 \
+  --kube-context kind-observability \
+  --namespace observability \
+  -f ./helm/prometheus-values.yaml \
+  --wait --timeout 5m
+```
+
+```bash
+helm repo add grafana-community https://grafana-community.github.io/helm-charts
+helm repo update
+
+helm upgrade --install grafana grafana-community/grafana \
+  --version 13.3.1 \
+  --kube-context kind-observability \
+  --namespace observability \
+  -f ./helm/grafana-values.yaml \
+  --wait --timeout 5m
+```
+
+### 3.4. Loki, Alloy и datasource Loki
+
+Установка хранилища и сборщика; повторное применение values Grafana после добавления Loki.
+
+```bash
+helm upgrade --install loki grafana-community/loki \
+  --version 18.15.0 \
+  --kube-context kind-observability \
+  --namespace observability \
+  -f helm/loki-values.yaml \
+  --wait --timeout 5m
+```
+
+```bash
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update grafana
+```
+
+```bash
+helm upgrade --install alloy grafana/alloy \
+  --version 1.13.1 \
+  --kube-context kind-observability \
+  --namespace observability \
+  -f helm/alloy-values.yaml \
+  --wait --timeout 5m
+```
+
+```bash
+helm upgrade --install grafana grafana-community/grafana \
+  --version 13.3.1 \
+  --kube-context kind-observability \
+  --namespace observability \
+  -f helm/grafana-values.yaml \
+  --wait --timeout 5m
+```
+
+### 3.5. Jaeger и экспорт трасс API
+
+Установка Jaeger и обновление API после настройки OTLP endpoint.
+
+```bash
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update jaegertracing
+```
+
+```bash
+helm upgrade --install jaeger jaegertracing/jaeger \
+  --version 4.14.1 \
+  --kube-context kind-observability \
+  --namespace observability \
+  -f helm/jaeger-values.yaml \
+  --wait --timeout 5m
+```
+
+```bash
+helm upgrade --install api ./helm/api \
+  --kube-context kind-observability \
+  --namespace observability \
+  --wait --timeout 2m
+```
+
+### 3.6. Получатель уведомлений, Karma и blackbox
+
+Проверка локального chart webhook, установка компонентов и обновление Prometheus с правилами и probe job.
+
+```bash
+helm lint ./helm/webhook
+helm template alert-webhook ./helm/webhook --namespace observability
+```
+
+```bash
+helm install alert-webhook ./helm/webhook \
+  --kube-context kind-observability \
+  --namespace observability \
+  --wait
+```
+
+```bash
+helm repo add wiremind https://wiremind.github.io/wiremind-helm-charts
+helm repo update wiremind
+```
+
+```bash
+helm install karma wiremind/karma \
+  --kube-context kind-observability \
+  --namespace observability \
+  --version 2.13.1 \
+  -f helm/karma-values.yaml \
+  --wait
+```
+
+```bash
+helm upgrade --install blackbox prometheus-community/prometheus-blackbox-exporter \
+  --kube-context kind-observability \
+  --namespace observability \
+  --version 11.20.0 \
+  -f helm/blackbox-values.yaml \
+  --wait
+```
+
+```bash
+helm upgrade prometheus prometheus-community/prometheus \
+  --kube-context kind-observability \
+  --namespace observability \
+  --version 29.35.0 \
+  -f helm/prometheus-values.yaml \
+  --wait
+```
+
+### 3.7. Проверка ресурсов API и сети Service
+
+Состояние Deployment/Pod, Service, EndpointSlice и HTTP запрос внутри кластера.
+
+```bash
+kubectl --context kind-observability -n observability get deployments,pods
+```
+
+```bash
+kubectl --context kind-observability -n observability get service api
+
+kubectl --context kind-observability -n observability \
+  get endpointslices -l kubernetes.io/service-name=api
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- wget -qO- http://api:8080/health
+```
+
+Дополнительная сводная проверка объектов и хранилищ, использованная при финальной проверке:
+
+```bash
+kubectl --context kind-observability -n observability get services,deployments,statefulsets,daemonsets
+kubectl --context kind-observability -n observability get pods,pvc
+kubectl --context kind-observability get nodes -o wide
+helm list --kube-context kind-observability -n observability -o json
+```
+
+### 3.8. Доступ к интерфейсам
+
+Каждый port-forward запускается в отдельном терминале и остаётся работать. В итоговой схеме API использует `18081`, Karma — `18080`.
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward service/api 18081:8080
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward service/prometheus-server 19090:80
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward service/grafana 13000:80
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward svc/jaeger 17686:16686
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward svc/prometheus-alertmanager 19093:9093
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward svc/karma 18080:80
+```
+
+В повторных шагах использовались также короткие варианты с `svc`. Они эквивалентны соответствующим командам выше и заменяют их, а не запускаются параллельно на тех же портах:
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward svc/grafana 13000:80
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward svc/prometheus-server 19090:80
+```
+
+### 3.9. Вход в Grafana
 
-Several sources supply metrics — don't confuse who does what. (`kubelet` is the Kubernetes agent on each node that runs and holds pods.)
+Команда выводит пароль администратора локальной Grafana. Сам пароль в отчёт не включается. Флаг `base64 -D` использован на macOS.
 
-- cAdvisor — built into `kubelet`; container metrics: CPU, memory, network per container. This is what `kubectl top pod` shows.
-- node-exporter — metrics of the node as a machine: host CPU, free memory, disk usage, network. Health of the hardware under the cluster.
-- kube-state-metrics — state of Kubernetes objects: how many pods are Running vs Pending, how many restarts, how many replicas a Deployment wants vs has. The main source for whether the cluster-as-orchestrator is healthy.
-- control plane metrics (API server, scheduler, etcd) and `kubelet`.
-- application metrics — what your service exposes on `/metrics`, including business metrics like orders placed.
+```bash
+kubectl --context kind-observability -n observability \
+  get secret grafana -o jsonpath='{.data.admin-password}' | base64 -D
+```
 
-Cheat sheet: consumption of a specific pod — cAdvisor; node health and disk space — node-exporter; "how many pods are Pending, who's restarting" — kube-state-metrics; business metrics — application metrics.
+| Интерфейс | Локальный адрес |
+| --- | --- |
+| Grafana | http://localhost:13000 |
+| Prometheus | http://localhost:19090 |
+| Alertmanager | http://localhost:19093 |
+| Jaeger | http://localhost:17686 |
+| Karma | http://localhost:18080 |
+| API для последних проверок | http://localhost:18081 |
+
+Адреса доступны при работающих соответствующих port-forward.
+
+## 4. Сервис под наблюдением
+
+Сервис написан на Go. Исходники и описание: [api/](api/README.md), сборка образа: [Dockerfile](api/Dockerfile).
+
+| Endpoint | Назначение |
+| --- | --- |
+| `/health` | HTTP 200, ответ `ok` |
+| `/fail` | HTTP 500, JSON лог уровня ERROR и ошибочный span |
+| `/slow` | Пауза 1–3 секунды во вложенном span `slow-op` |
+| `/load` | Серия HTTP запросов к самому сервису; параметры управляют нагрузкой |
+| `/metrics` | Счётчики запросов/ошибок и гистограмма длительности |
+
+Ответ содержит `X-Trace-ID`; лог запроса содержит `trace_id` и `span_id`.
+
+**Дополнить:** как instrumentation связывает запрос, метрики, лог и spans; почему `/metrics` исключён из прикладной телеметрии.
+
+## 5. Метрики: Prometheus и RED дашборд
+
+Prometheus опрашивает `/metrics` каждые 15 секунд. В Grafana настроен datasource Prometheus. RED панели показывают RPS, долю 5xx и p95 времени ответа.
+
+Запросы, использованные для RED панелей:
+
+RPS:
+
+```promql
+sum(rate(http_requests_total{job="api"}[5m]))
+```
+
+Доля ошибок (единица Grafana: percent 0–1):
 
-### A bit of PromQL
+```promql
+(sum(rate(http_errors_total{job="api"}[5m])) or vector(0))
+/ sum(rate(http_requests_total{job="api"}[5m]))
+```
+
+p95 успешных ответов (единица: seconds):
 
-PromQL is the query language for Prometheus metrics. Three ideas:
+```promql
+histogram_quantile(
+  0.95,
+  sum by (le) (
+    rate(http_request_duration_seconds_bucket{job="api",code=~"2.."}[5m])
+  )
+)
+```
 
-- Select a series by name and labels: `http_requests_total{service="api"}`.
-- `rate(...[5m])` — rate of growth of a counter. Many metrics are counters that only grow from service start and never reset; the raw "5M requests total" tells you nothing. What matters is the rate — requests per second now. `rate` turns "total accumulated" into "per second", and `[5m]` is a smoothing window over the last 5 minutes.
-- Aggregation: `sum by (code) (rate(http_requests_total[5m]))` — sum separately per value of the `code` label, i.e. the rate for 200s and for 500s separately.
+Диагностические запросы в интерфейсе Prometheus:
 
-Together they give the key health metric — error rate: rate of 5xx requests divided by rate of all requests.
+```promql
+up{job="api"}
+```
 
----
+```promql
+http_requests_total{job="api"}
+```
 
-## Block 2. Logs and events
+**Дополнить:** объяснить `rate`, `sum`, окно `[5m]`, `histogram_quantile`, сохранение `le` и единицы измерения.
 
-### The log's path: why stdout, not a file
+### 5.1. Общий результат
 
-Container rule: the app writes logs to standard output (`stdout`/`stderr`), not to files inside the container. Reason — the container filesystem is ephemeral (Lecture 1): write a log to a file inside and the container is recreated, taking the log with it. So: the app writes to `stdout` → the node's runtime (here `containerd`) captures it into a file on the node → `kubectl logs` reads that file. That's why `kubectl logs` works and shows only the current pod. But logs on the node aren't eternal either: they rotate (old ones overwritten so the disk doesn't fill), and if the node dies you lose access. So logs must be collected from nodes into a separate, centralized store.
+После `/load`, `/fail` и `/slow` выросли RPS, доля ошибок и p95. Панель задержки названа `Latency p95`.
 
-### Centralized log collection
+![RED дашборд: рост RPS, доли ошибок и p95](screenshots/grafana-red-dashboard.png)
 
-You need an agent that collects logs from all nodes into one place. On each node runs a collection agent — as a DaemonSet, a useful object type. Where a Deployment runs some number of replicas anywhere, a DaemonSet guarantees exactly one pod per node — ideal for agents that must be on every machine. The agent reads the log files of all pods on its node and ships them to a central store. Common agents: Fluent Bit, Vector, Promtail; common stores: Loki, Elasticsearch. Result: logs of all pods from all nodes flow into one searchable place, readable even after a pod or whole node dies. Two tools: `kubectl logs` for "look at a live pod right now", centralized collection for history, search, and after-the-fact investigations. In production you need the second.
+**Дополнить:** связать участки графиков с действиями при проверке; объяснить сглаживание и задержку восстановления из-за окна rate.
 
-### Structured logs
+### 5.2. Отдельные проверки RPS и ошибок
 
-Two ways to write a log. Plain text: "2026-05-01 db connection error for order 123" — readable to a human, hard for a machine to filter (parsing regexes, brittle). Structured (usually JSON): `{level:"error", msg:"db connection failed", order_id:123}` — same information as fields. The log store can search and aggregate by field: "show all `error` for `order_id=123`", "count errors per endpoint". In large systems structured logs are nearly mandatory — searching by field is far more powerful than by eye. Agree on this with developers early.
+На раннем снимке RPS виден переход от фоновых запросов к нагрузке.
 
-### Kubernetes events are not logs
+![Реакция RPS на нагрузку](screenshots/grafana-request-rate.png)
 
-Events are a separate signal: not what your app writes, but messages from the cluster itself about what it does to your objects. Examples: `FailedScheduling` (pod didn't fit — the Pending state), `OOMKilled` (terminated for exceeding memory), `BackOff` (restarting in a loop — the inside of `CrashLoopBackOff`), `Pulling`/`Pulled` (fetching the image), `Evicted` (evicted under pressure). View with `kubectl describe pod <name>` (Events section at the bottom, for that pod — the first place to look when a pod won't start) or `kubectl get events` for the whole namespace. Key detail: events are short-lived — kept about an hour, then deleted. For after-the-fact investigation, collect them centrally too. Keep the distinction: logs = what the APPLICATION says; events = what the CLUSTER does to it. Investigate both.
+При проверке `/fail` доля ошибок заметно увеличилась.
 
-### Metrics + logs + events together
+![Рост доли ошибок](screenshots/grafana-error-rate.png)
 
-On a real incident:
+**Дополнить:** почему доля ошибок информативнее абсолютного числа 5xx и какие проверки создают фоновый трафик.
 
-1. Metric: `api`'s 5xx error rate spikes — WHAT and when, but not why.
-2. Events: pod `postgres` shows `OOMKilled` and `BackOff` — the cluster says the DB is restarting for lack of memory.
-3. Logs: `api` logs "timeout connecting to postgres", `postgres` logs "out of memory" — WHY.
+### 5.3. Команды нагрузки
 
-Conclusion: `postgres` hit its memory limit → restarts → `api` can't connect → errors for clients. Fix the `postgres` memory (limit or leak). Diagnosis in three steps, each pillar adding its piece.
+Ранние проверки из Pod API: всплеск RPS, серия 5xx и серия медленных ответов.
 
----
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- \
+  wget -qO- 'http://api:8080/load?count=500&concurrency=25'
+```
 
-## Block 3. Traces, alerts, eBPF
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- \
+  wget -qO- 'http://api:8080/load?target=fail&count=100&concurrency=10'
+```
 
-### Why traces
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- sh -c '
+    for i in $(seq 1 20); do
+      wget -qO- http://api:8080/slow
+      echo
+    done
+  '
+```
 
-One client request crosses many services (`api → worker → postgres → ...`). The client says "slow" — but where exactly? Metrics show "slow on average", not for a specific request. Logs of each service show fragments, but reassembling one request's path by hand is nearly impossible at scale. Distributed tracing solves this: it shows one specific request's path across the whole chain and how much time it spent at each step. Literally visible: `api` — 5 ms, `worker` — 10 ms, the `postgres` call — 800 ms — there's the culprit.
+Последняя нагрузка через локальный port-forward, использованная для обновлённого общего снимка:
 
-### How a trace works: trace and span
+```bash
+curl -sS 'http://localhost:18081/load?target=health&count=200&concurrency=10'
+```
 
-- span — one unit of work (e.g. "processing in `api`" or "query to `postgres`"): start, end, duration.
-- trace — the whole path of one request, a tree of linked spans.
+```bash
+for i in $(seq 1 60); do
+  curl -sS http://localhost:18081/slow >/dev/null
+  curl -sS http://localhost:18081/fail >/dev/null
+  sleep 1
+done
+```
 
-How they link into one tree across different services and nodes: the first request is assigned a unique trace-id, which is passed down the chain, usually in HTTP headers — this is context propagation. Each service sees the trace-id, adds its spans under the same id, and forwards it; the tracing system assembles all spans with one trace-id into a tree. For this to work, apps must forward the headers — which requires instrumenting the code: adding a library that creates spans around operations and propagates the trace-id. Usually not rewriting logic, just a library plus a few lines of config. A service mesh (covered later in the course) helps partially — it sees inter-service calls and can add basic spans at service boundaries with no code — but detail inside a service (which functions, which DB queries) comes only from instrumenting the code; the mesh doesn't look inside a service.
+## 6. Логи: Alloy, Loki и Grafana
 
-### OpenTelemetry and Jaeger
+API пишет JSON в stdout. Alloy работает как DaemonSet, читает файлы контейнерных логов своей ноды, снимает CRI обёртку и отправляет записи в Loki. Grafana обращается к Loki для поиска.
 
-- OpenTelemetry (OTel) — an open standard and set of libraries for observability in general: a uniform way to collect and transmit metrics, logs, traces. It ended the zoo of formats where switching monitoring systems meant re-instrumenting every service. Instrument once to the standard, then send to any compatible system.
-- Jaeger — a popular system for storing and viewing traces. It shows the span tree with durations: open a slow request and see where the time went.
+![Логи API в Grafana, включая ERROR для /fail](screenshots/grafana-api-logs.png)
 
-In practice: instrument with OpenTelemetry, traces go to Jaeger, metrics to Prometheus, logs to Loki — all linked.
+**Дополнить:** почему нужен DaemonSet; что делает `stage.cri`; чем индексируемые labels отличаются от JSON полей, извлекаемых при запросе; почему `trace_id` не стоит превращать в label потока.
 
-### Golden signals: what to watch
+### 6.1. Поиск конкретного запроса
 
-You can gather thousands of metrics and drown. What first? The proven answer from Google's SRE (Site Reliability Engineering) team — four golden signals:
+```logql
+{app="api", namespace="observability"}
+| json
+| trace_id="246eb66dc80a2ced442fcf41eb48f17c"
+```
 
-- Latency — how long a request takes (separately for successful and failed; fast errors can mask slow success).
-- Traffic — requests per second.
-- Errors — fraction of failed requests.
-- Saturation — how full your resources are (memory, CPU, disk — how close to the limit).
+В найденной записи видны `/fail`, HTTP 500, полный Trace ID и Span ID.
 
-Starting observability for a new service, begin with exactly these four and add specifics later.
+![JSON лог /fail с полным trace_id и span_id](screenshots/grafana-fail-trace-id.png)
 
-### Alerts: page on symptoms, not causes
+**Дополнить:** почему этот фильтр связывает запись с конкретной трассой точнее, чем поиск только по времени.
 
-Main principle: page a human on what actually hurts the user (a symptom), not on every internal cause.
+### 6.2. Команды проверки хранилища и сборщика
 
-- Good: "`api` error rate > 5% for five minutes", "order latency > 2 s" — the user is hurting now; worth a night call.
-- Bad: "node CPU 90%" on its own — maybe the service runs fine at 90%; you wake someone for nothing. Cause metrics like CPU help investigation but are a path to burnout as page triggers.
+Готовность Loki, его PVC, размещение DaemonSet Alloy и поиск нескольких записей через HTTP API Loki.
 
-A good threshold reference is an SLO (service level objective), e.g. "99.9% of requests succeed": alert when you risk breaching it — a real threat to the user, not an abstract number.
+```bash
+kubectl --context kind-observability -n observability \
+  get pods,pvc -l app.kubernetes.io/instance=loki
+```
 
-### Alert fatigue
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- \
+  wget -qO- http://loki:3100/ready
+```
 
-Alert fatigue — so many alerts, mostly false, that people stop reacting, mute notifications, and miss the real incident in the noise. Paradox: too much monitoring makes a system less observable because signals lose trust. How to fight it:
+```bash
+kubectl --context kind-observability -n observability \
+  get daemonset,pods -l app.kubernetes.io/instance=alloy
+```
 
-- Every alert must require action; if you do nothing on it, delete it.
-- Fewer alerts, but meaningful; group related ones so one incident doesn't flood you; fix or remove noisy ones.
-- Every alert should carry a clear "what to do", at least a runbook link.
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- \
+  wget -qO- 'http://loki:3100/loki/api/v1/query_range?query=%7Bapp%3D%22api%22%7D&limit=5'
+```
 
-Good observability is not "more alerts", it's "you're paged only when it truly matters".
+Запросы в Grafana Explore → Loki:
 
-### eBPF in observability
+```logql
+{app="api", namespace="observability"}
+```
 
-eBPF — a mechanism that safely runs small programs inside the Linux kernel — gives observability without changing application code.
+```logql
+{app="api", namespace="observability"}
+| json
+| route="/fail"
+| status=500
+```
 
-- Kernel programs see syscalls, network connections, latencies — across all processes on a node at once.
-- You can get metrics and often traces automatically, without instrumenting each service by hand.
-- Tools: Pixie, Cilium/Hubble (network), Parca (profiling — what a process spends CPU and memory on, down to specific functions).
+## 7. Трассировки: OpenTelemetry и Jaeger
 
-eBPF doesn't fully replace application observability — business metrics like orders placed are known only to the app; the kernel knows nothing of them. But it drastically lowers the barrier: instead of instrumenting every service for basic visibility, it's largely "turn it on and see".
+API экспортирует spans по OTLP HTTP на `http://jaeger:4318`. Используется пакетная отправка. Jaeger в этой конфигурации хранит трассы в памяти.
 
----
+### 7.1. Медленный запрос
 
-## Summary
+Трасса `/slow` содержит родительский span и вложенный `slow-op`. Оба занимают примерно 2,7 секунды; вложенная операция объясняет основную задержку запроса.
 
-- Three pillars: metrics (what), logs (why), traces (where) — strong in combination.
-- Metrics: Prometheus pulls (scrapes `/metrics`, discovers targets); sources — cAdvisor (containers), node-exporter (node), kube-state-metrics (k8s objects), control plane, application; PromQL: `rate()` for counters and error rate.
-- Logs to `stdout` (ephemeral container FS) → node runtime → centralized collection by a DaemonSet agent into Loki/Elasticsearch; structured (JSON) logs are searchable by field.
-- Kubernetes events ≠ logs: what the CLUSTER does (`OOMKilled`, `FailedScheduling`); short-lived, collect them too.
-- Traces: spans under a shared trace-id, context propagation; standard — OpenTelemetry, viewer — Jaeger.
-- Practice: golden signals (latency, traffic, errors, saturation); alert on symptoms and SLO risk, not causes; fight alert fatigue; eBPF lowers the barrier.
+![Jaeger: /slow и дочерний span slow-op](screenshots/jaeger-slow.png)
 
-Next we move up into orchestration — how Kubernetes runs all this, starting with the control plane.
+**Дополнить:** почему длительности родительского и дочернего span нельзя складывать; чем отличаются Trace ID и Span ID.
 
-> Lab: set up metrics, logs and traces for your service and configure 3 alerts — see [lab.md](lab.md).
+### 7.2. Ошибочный запрос и связь с логом
+
+В `/fail` видны HTTP 500, `error=true` и событие `exception` с сообщением `intentional failure`.
+
+![Jaeger: ошибочный span /fail и событие exception](screenshots/jaeger-fail.png)
+
+В логе выше записаны `trace_id=246eb66dc80a2ced442fcf41eb48f17c` и `span_id=16310c038d9685fe`. В Jaeger показаны префикс `246eb66` и тот же полный Span ID. Это подтверждает связь показанного лога и span.
+
+**Дополнить:** как нашли трассу по ID из лога; почему запись exception и установка статуса Error — разные операции.
+
+### 7.3. Команды для трассировок и снимков
+
+Вызов endpoints из Pod и чтение последних логов. HTTP 500 для /fail — ожидаемый результат; wget может завершиться с ненулевым кодом.
+
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- \
+  wget -S -O- http://api:8080/fail
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  logs deployment/api --tail=10
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- \
+  wget -S -O- http://api:8080/slow
+```
+
+```bash
+kubectl --context kind-observability -n observability exec deployment/api -- \
+     wget -S -O- http://api:8080/fail
+```
+
+Последние вызовы через локальный API. В заголовке ответа читается `X-Trace-ID`:
+
+```bash
+curl -sS -i http://localhost:18081/slow
+```
+
+```bash
+curl -sS -i http://localhost:18081/fail
+```
+
+После пакетного экспорта (обычно через несколько секунд) открывался адрес `http://localhost:17686/trace/<X-Trace-ID>`. В Grafana этот же ID подставлялся в фильтр из раздела 6.1.
+
+## 8. Алерты: Prometheus, Alertmanager, webhook и Karma
+
+Правила вычисляет Prometheus. Alertmanager группирует и отправляет уведомления в `alert-webhook`; Karma показывает активные алерты через API Alertmanager.
+
+| Алерт | Условие | `for` | Назначение |
+| --- | --- | --- | --- |
+| `APIHighErrorRate` | Доля 5xx выше 5%, окно rate 1 минута | 2 минуты | Обнаружить устойчивые ошибки запросов |
+| `APIHighLatency` | p95 успешных 2xx запросов выше 1 секунды, окно 1 минута | 2 минуты | Обнаружить медленные успешные ответы |
+| `APIUnavailable` | `probe_success{job="api-health"} == 0` | 1 минута | Обнаружить неуспешную проверку `/health` |
+
+Все правила имеют `severity: critical` и `service: api`. Blackbox проверяет HTTP 200 на `/health`; доступность exporter и результат проверки API — разные сигналы.
+
+**Дополнить для каждого алерта:** пользовательский эффект, обоснование порога и длительности, первые действия дежурного. Раскрыть возможные ложные срабатывания и пределы проверки `/health`.
+
+### 8.1. Ошибки и задержка
+
+Нагрузка на `/fail` и `/slow` удержала условия правил достаточно долго для перехода в firing.
+
+![Alertmanager: APIHighErrorRate и APIHighLatency](screenshots/alertmanager-errors-and-latency-firing.png)
+
+Те же два алерта появились в Karma.
+
+![Karma: ошибки и задержка API](screenshots/karma-errors-and-latency-firing.png)
+
+Отдельный более ранний снимок показывает описание `APIHighErrorRate` в Karma.
+
+![Karma: подробности алерта высокой доли ошибок](screenshots/karma-error-rate-details.png)
+
+### 8.2. Недоступность
+
+Для проверки API был масштабирован до нуля реплик. После неуспешных probes и выдержки `for` появился `APIUnavailable`. Затем число реплик восстановлено до одного.
+
+![Alertmanager: APIUnavailable](screenshots/alertmanager-unavailable-firing.png)
+
+![Karma: APIUnavailable](screenshots/karma-unavailable-firing.png)
+
+**Дополнить:** команды проверки, наблюдавшиеся `up` и `probe_success`, переходы pending → firing → inactive и поведение `for` при прерывании условия.
+
+### 8.3. Доставка уведомлений
+
+Получатель webhook зафиксировал JSON уведомления со статусом `firing`. Это подтверждает получение уведомлений получателем, отдельно от отображения алертов в интерфейсах.
+
+![Webhook получил APIHighErrorRate со статусом firing](screenshots/webhook-error-rate-firing.png)
+
+![Webhook получил APIHighLatency со статусом firing](screenshots/webhook-latency-firing.png)
+
+В конфигурации включён `send_resolved: true`. В ходе работы также наблюдались уведомления `resolved`, но отдельные снимки этих уведомлений здесь не сохранены.
+
+**Дополнить:** роль `group_by`, `group_wait`, `group_interval`, `repeat_interval`; почему отказ Karma не останавливает доставку; чем снятие алерта отличается от отправки уведомления о восстановлении.
+
+### 8.4. Команды срабатывания и восстановления
+
+Отдельные длительные проверки: ошибки и затем задержка. Каждый цикл — самостоятельный сценарий проверки.
+
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- sh -c '
+    for i in $(seq 1 40); do
+      wget -qO- "http://api:8080/load?target=fail&count=10&concurrency=2"
+      echo
+      sleep 5
+    done
+  '
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- sh -c '
+    for i in $(seq 1 90); do
+      wget -qO- http://api:8080/slow
+      echo
+      sleep 1
+    done
+  '
+```
+
+Совместная проверка ошибок и задержки:
+
+```bash
+kubectl --context kind-observability -n observability \
+  exec deployment/api -- sh -c '
+    for i in $(seq 1 90); do
+      wget -qO- http://api:8080/slow
+      wget -qO- "http://api:8080/load?target=fail&count=10&concurrency=2"
+      sleep 1
+    done
+  '
+```
+
+Проверка недоступности меняет количество реплик API. После фиксации firing выполнялась команда восстановления:
+
+```bash
+kubectl --context kind-observability -n observability \
+  scale deployment/api --replicas=0
+```
+
+```bash
+kubectl --context kind-observability -n observability \
+  scale deployment/api --replicas=1
+
+kubectl --context kind-observability -n observability \
+  rollout status deployment/api
+```
+
+Приём уведомлений наблюдался в логах получателя:
+
+```bash
+kubectl --context kind-observability -n observability \
+  logs -f deployment/alert-webhook
+```
+
+Запросы в интерфейсе Prometheus для различения доступности exporter и результата probe:
+
+```promql
+up{job="api-health"}
+```
+
+```promql
+probe_success{job="api-health"}
+```
+
+HTTP проверки правил и активных алертов при финальной верификации:
+
+```bash
+curl -sS 'http://localhost:19090/api/v1/rules?type=alert'
+curl -sS http://localhost:19093/api/v2/alerts
+```
+
+## 9. Хранение и ограничения
+
+- Jaeger использует память с лимитом 10 000 трасс: после перезапуска его хранилища ранее собранные трассы теряются.
+- Loki работает в одной реплике, хранит данные в filesystem на PVC. Это не отказоустойчивая конфигурация.
+- Grafana, Prometheus, Loki и Alertmanager используют PVC. В текущем локальном kind данные связаны с нодой и не гарантированно сохраняются после удаления кластера.
+- Positions Alloy сохраняются в hostPath на ноде. Используется `tail_from_end = true`.
+- Проверки `/health` входят в прикладной трафик и влияют на RED метрики.
+
+**Дополнить:** что переживает перезапуск Pod, что теряется при удалении kind; какие изменения нужны для эксплуатации с требованиями к сохранности данных и доступности.
+
+**Дашборд:** в репозиторий добавлена [переносимая версия API RED](dashboards/api-red.json), созданная из трёх использованных PromQL запросов. Это не экспорт пользовательского дашборда со скриншотов: у неё отдельный UID `api-red-portable`. Скрипт запуска загружает её через [дополнительные values Grafana](helm/grafana-dashboard-values.yaml) и `--set-file`. JSON описывает дашборд, а не историю метрик.
+
+## 10. Результаты и выводы
+
+Сохранены доказательства реакции RED графиков, поиска JSON лога, вложенного и ошибочного spans, связи лога с трассой, срабатывания трёх правил в Alertmanager/Karma и доставки двух firing уведомлений в webhook.
+
+**Дополнить:** собственный вывод — что удалось проверить, что оказалось сложным, как использовали разные сигналы для диагностики и какие ограничения остались. Отделить подтверждённое снимками от наблюдений без сохранённого доказательства.
+
+## Приложение. Дополнительные снимки
+
+Предыдущая версия общего RED дашборда до переименования панели задержки:
+
+![Ранняя версия RED дашборда](screenshots/archive/grafana-red-dashboard-initial.png)
+
+Диагностический снимок предупреждения YAML редактора на Helm выражении; не является доказательством работоспособности Kubernetes ресурсов:
+
+![Предупреждение редактора на Helm шаблоне](screenshots/diagnostics/helm-template-editor-warning.png)
+
+Полный [указатель скриншотов](screenshots/README.md).
+
+
+### Ранняя локальная проверка через Compose
+
+До перехода к Kubernetes API проверялся через Compose. Этот запуск не является результатом развёртывания по заданию; итоговый стек использует Helm в Kubernetes.
+
+```bash
+docker compose up -d --build api
+curl http://localhost:8081/health
+docker compose logs api
+```
+
+### Ранний port-forward прямо к Deployment
+
+До установки Karma порт 18080 использовался для API. Это исторический вариант: одновременно с итоговым port-forward Karma он конфликтует. Итоговый порт API — 18081.
+
+```bash
+kubectl --context kind-observability -n observability \
+  port-forward deployment/api 18080:8080
+```
+
+```bash
+curl http://localhost:18080/health
+
+kubectl --context kind-observability -n observability logs deployment/api
+```
+
+### Проверки кода вспомогательного API
+
+При подготовке Go сервиса выполнялись:
+
+```bash
+cd api
+go test -race ./...
+go vet ./...
+cd ..
+git diff --check
+```
+
+В среде агента для Go использовались временные каталоги кеша (`GOMODCACHE`, `GOCACHE`); они не являются обязательной частью запуска сервиса.
+
+### Сохранение материалов
+
+```bash
+mkdir -p dashboards screenshots
+```
+
+Дашборд сохранялся через Grafana UI; экспорт JSON выполняется отдельно через Export → Export as code. Скриншоты сохранены в `screenshots/`.

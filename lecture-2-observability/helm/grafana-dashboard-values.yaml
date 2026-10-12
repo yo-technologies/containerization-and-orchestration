@@ -1,0 +1,14 @@
+# Loaded by setup-observability.sh together with grafana-values.yaml.
+# Dashboard JSON is supplied with --set-file, so it need not be inside the chart.
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        folder: Labs
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
