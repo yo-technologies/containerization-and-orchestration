@@ -1,0 +1,26 @@
+# extraScrapeConfigs is a string: retain both Lab 2 jobs when adding Lab 1.
+extraScrapeConfigs: |
+  - job_name: api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:8080"]
+
+  - job_name: api-health
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+      target: ["http://api:8080/health"]
+    static_configs:
+      - targets: ["blackbox:9115"]
+        labels:
+          service: api
+
+  - job_name: lab1-cgroup
+    metrics_path: /metrics
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    static_configs:
+      - targets: ["host.docker.internal:19100"]
+        labels:
+          lab: lab1
+          source: lima

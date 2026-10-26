@@ -1,0 +1,345 @@
+{
+  "uid": "lab1-cgroup-lima",
+  "title": "ЛР1 — ресурсы mydocker в Lima",
+  "tags": [
+    "lab1",
+    "cgroup",
+    "lima"
+  ],
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "timezone": "browser",
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Память cgroup и лимит",
+      "description": "memory.current — учитываемая память всей группы, включая процессы запускателя; это не только RSS API.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 12
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab1_cgroup_memory_current_bytes{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}",
+          "legendFormat": "Занято",
+          "range": true
+        },
+        {
+          "refId": "B",
+          "expr": "lab1_cgroup_memory_limit_bytes{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}",
+          "legendFormat": "Лимит",
+          "range": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "CPU: занятые ядра и квота",
+      "description": "rate накопленных CPU-секунд за 1 минуту. 0,5 означает половину одного ядра, а не половину всех CPU VM.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "cores",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 12
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(lab1_cgroup_cpu_usage_seconds_total{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}[1m])",
+          "legendFormat": "CPU",
+          "range": true
+        },
+        {
+          "refId": "B",
+          "expr": "lab1_cgroup_cpu_limit_cores{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}",
+          "legendFormat": "Квота",
+          "range": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Доля периодов с CPU throttling",
+      "description": "rate(nr_throttled) / rate(nr_periods), окно 1 минута. Это доля периодов, не доля потерянного CPU-времени. Если периоды не идут, 0/0 даёт отсутствие значения.",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 12
+          },
+          "max": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(lab1_cgroup_cpu_throttled_periods_total{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}[1m]) / rate(lab1_cgroup_cpu_periods_total{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}[1m])",
+          "legendFormat": "Периоды с throttling",
+          "range": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "OOM kills: накопленный счётчик",
+      "description": "Значение memory.events oom_kill. Сбрасывается при пересоздании cgroup; для новых событий нужна функция increase за интервал.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 6,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 12
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab1_cgroup_memory_oom_kills_total{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}",
+          "legendFormat": "OOM kills",
+          "range": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Cgroup содержит процессы",
+      "description": "1 — в cgroup есть живые процессы. Не заменяет HTTP /health API.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 8,
+        "w": 6,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 12
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab1_cgroup_populated{job=\"lab1-cgroup\",cgroup=\"lab1-mydocker\"}",
+          "legendFormat": "populated",
+          "range": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Exporter: scrape успешен",
+      "description": "1 — Prometheus успешно опросил exporter. Это не проверка HTTP-доступности API.",
+      "type": "stat",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 18,
+        "y": 12,
+        "w": 6,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 12
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "up{job=\"lab1-cgroup\"}",
+          "legendFormat": "up",
+          "range": true
+        }
+      ]
+    }
+  ]
+}
