@@ -1,0 +1,3 @@
+# Warm one idle batch before scaling. Avoid scaling the old CPU-burning template.
+batch:
+  replicas: 1

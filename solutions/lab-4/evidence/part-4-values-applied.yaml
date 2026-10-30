@@ -1,0 +1,54 @@
+image:
+  repository: ghcr.io/itmo-labs/shop
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+api:
+  replicas: 3
+  imageTag: "0.1.0"
+  healthFail: false
+  spreading:
+    # Keep API replicas balanced across eligible hostname domains.
+    enabled: true
+    mechanism: topologySpreadConstraints # or podAntiAffinity (required)
+  service:
+    type: NodePort
+    nodePort: 30080
+worker:
+  replicas: 2
+  imageTag: "0.1.0"
+  healthFail: false
+batch:
+  enabled: true
+  replicas: 1
+  imageTag: "batch-0.1.0"
+  memoryMiB: 32
+  cpuWorkers: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+resources:
+  requests:
+    cpu: 10m
+    memory: 100Mi
+  limits:
+    # KRR simple leaves CPU unlimited; keep the existing cap for guardrails.
+    cpu: 250m
+    memory: 100Mi
+postgres:
+  instances: 1
+  image: ghcr.io/cloudnative-pg/postgresql:17.6
+  storage: 1Gi
+  resources:
+    requests:
+      cpu: 26m
+      memory: 100Mi
+    limits:
+      # Policy requires a CPU limit; this cap is not a KRR recommendation.
+      cpu: 500m
+      memory: 100Mi
+monitoring:
+  enabled: true

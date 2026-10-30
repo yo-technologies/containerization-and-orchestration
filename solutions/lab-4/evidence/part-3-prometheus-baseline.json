@@ -1,0 +1,239 @@
+{
+  "evaluation_time": "2026-10-29T15:16:50.749Z",
+  "queries": {
+    "cpu_p95_cores": {
+      "promql": "quantile_over_time(0.95, (sum by(pod,container) (rate(container_cpu_usage_seconds_total{namespace=\"shop\",container!=\"\",container!=\"POD\"}[1m])))[15m:15s])",
+      "response": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {
+                "container": "api",
+                "pod": "shop-api-74bcb8db65-fk7hf"
+              },
+              "value": [
+                1793287010.749,
+                "0.005203361513036667"
+              ]
+            },
+            {
+              "metric": {
+                "container": "api",
+                "pod": "shop-api-74bcb8db65-bkk22"
+              },
+              "value": [
+                1793287010.749,
+                "0.00340706834668331"
+              ]
+            },
+            {
+              "metric": {
+                "container": "api",
+                "pod": "shop-api-74bcb8db65-9q28c"
+              },
+              "value": [
+                1793287010.749,
+                "0.006146733412825138"
+              ]
+            },
+            {
+              "metric": {
+                "container": "batch",
+                "pod": "shop-batch-7d67788d55-lf2qj"
+              },
+              "value": [
+                1793287010.749,
+                "0.25024861981238283"
+              ]
+            },
+            {
+              "metric": {
+                "container": "worker",
+                "pod": "shop-worker-5cdf65d44f-kfkvq"
+              },
+              "value": [
+                1793287010.749,
+                "0.0027228077586677387"
+              ]
+            },
+            {
+              "metric": {
+                "container": "postgres",
+                "pod": "shop-postgres-1"
+              },
+              "value": [
+                1793287010.749,
+                "0.041045005138721585"
+              ]
+            },
+            {
+              "metric": {
+                "container": "worker",
+                "pod": "shop-worker-5cdf65d44f-j7n4f"
+              },
+              "value": [
+                1793287010.749,
+                "0.0028459561894095976"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "memory_peak_bytes": {
+      "promql": "max_over_time((sum by(pod,container)(container_memory_working_set_bytes{namespace=\"shop\",container!=\"\",container!=\"POD\"}))[15m:15s])",
+      "response": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {
+                "container": "api",
+                "pod": "shop-api-74bcb8db65-fk7hf"
+              },
+              "value": [
+                1793287010.749,
+                "14635008"
+              ]
+            },
+            {
+              "metric": {
+                "container": "api",
+                "pod": "shop-api-74bcb8db65-bkk22"
+              },
+              "value": [
+                1793287010.749,
+                "13860864"
+              ]
+            },
+            {
+              "metric": {
+                "container": "api",
+                "pod": "shop-api-74bcb8db65-9q28c"
+              },
+              "value": [
+                1793287010.749,
+                "14364672"
+              ]
+            },
+            {
+              "metric": {
+                "container": "batch",
+                "pod": "shop-batch-7d67788d55-lf2qj"
+              },
+              "value": [
+                1793287010.749,
+                "40407040"
+              ]
+            },
+            {
+              "metric": {
+                "container": "worker",
+                "pod": "shop-worker-5cdf65d44f-kfkvq"
+              },
+              "value": [
+                1793287010.749,
+                "13418496"
+              ]
+            },
+            {
+              "metric": {
+                "container": "postgres",
+                "pod": "shop-postgres-1"
+              },
+              "value": [
+                1793287010.749,
+                "76812288"
+              ]
+            },
+            {
+              "metric": {
+                "container": "worker",
+                "pod": "shop-worker-5cdf65d44f-j7n4f"
+              },
+              "value": [
+                1793287010.749,
+                "13393920"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "backlog_at_end": {
+      "promql": "max(shop_pending_orders{namespace=\"shop\"})",
+      "response": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {},
+              "value": [
+                1793287010.749,
+                "0"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "worker_errors_increase": {
+      "promql": "sum(increase(shop_worker_errors_total{namespace=\"shop\"}[15m]))",
+      "response": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {},
+              "value": [
+                1793287010.749,
+                "0"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "created_increase": {
+      "promql": "sum(increase(shop_orders_created_total{namespace=\"shop\"}[15m]))",
+      "response": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {},
+              "value": [
+                1793287010.749,
+                "9000.965066733817"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "processed_increase": {
+      "promql": "sum(increase(shop_worker_processed_orders_total{namespace=\"shop\"}[15m]))",
+      "response": {
+        "status": "success",
+        "data": {
+          "resultType": "vector",
+          "result": [
+            {
+              "metric": {},
+              "value": [
+                1793287010.749,
+                "8996.32586897716"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

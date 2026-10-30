@@ -1,0 +1,97 @@
+{
+  "pod": "shop-postgres-1",
+  "uid": "d30e8197-ba7f-4d2d-8e20-d22341ef9824",
+  "node": "shop-lab4-control-plane",
+  "resources": {
+    "limits": {
+      "cpu": "500m",
+      "memory": "100Mi"
+    },
+    "requests": {
+      "cpu": "500m",
+      "memory": "100Mi"
+    }
+  },
+  "containerStatus": [
+    {
+      "allocatedResources": {
+        "cpu": "500m",
+        "memory": "100Mi"
+      },
+      "containerID": "containerd://fe6d799f392cd18dc4b5fa37902f8925b24eed891c05093627c2ce412f4dd935",
+      "image": "ghcr.io/cloudnative-pg/postgresql:17.6",
+      "imageID": "ghcr.io/cloudnative-pg/postgresql@sha256:30b304a2e300ed80b6d1b740e4369e9b0f25599fb518de78c01fd9f25531791b",
+      "lastState": {
+        "terminated": {
+          "containerID": "containerd://bfc49f5dae5f495f715e5d41bd6f32cdc19fa4926b6d5137b058ed11f9a1f7c2",
+          "exitCode": 0,
+          "finishedAt": "2026-10-30T18:25:57Z",
+          "reason": "Completed",
+          "startedAt": "2026-10-30T18:05:41Z"
+        }
+      },
+      "name": "postgres",
+      "ready": false,
+      "resources": {
+        "limits": {
+          "cpu": "500m",
+          "memory": "100Mi"
+        },
+        "requests": {
+          "cpu": "500m",
+          "memory": "100Mi"
+        }
+      },
+      "restartCount": 3,
+      "started": true,
+      "state": {
+        "running": {
+          "startedAt": "2026-10-30T18:25:57Z"
+        }
+      },
+      "user": {
+        "linux": {
+          "gid": 26,
+          "supplementalGroups": [
+            26,
+            101
+          ],
+          "uid": 26
+        }
+      },
+      "volumeMounts": [
+        {
+          "mountPath": "/var/lib/postgresql/data",
+          "name": "pgdata"
+        },
+        {
+          "mountPath": "/run",
+          "name": "scratch-data"
+        },
+        {
+          "mountPath": "/controller",
+          "name": "scratch-data"
+        },
+        {
+          "mountPath": "/dev/shm",
+          "name": "shm"
+        },
+        {
+          "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+          "name": "kube-api-access-cs9bb",
+          "readOnly": true,
+          "recursiveReadOnly": "Disabled"
+        }
+      ]
+    }
+  ],
+  "cgroup": {
+    "cpu.max": "50000 100000",
+    "cpu.stat": "usage_usec 223068672\nuser_usec 29133151\nsystem_usec 193935521\nnice_usec 0\nnr_periods 16043\nnr_throttled 3436\nthrottled_usec 544915704\nnr_bursts 0\nburst_usec 0",
+    "memory.current": "104497152",
+    "memory.max": "104857600",
+    "memory.events": "low 0\nhigh 0\nmax 3363\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 5",
+    "memory.pressure": "some avg10=2.56 avg60=3.86 avg300=2.80 total=25094603\nfull avg10=2.56 avg60=3.84 avg300=2.78 total=24843487",
+    "memory.stat": "anon 30380032\nfile 69959680\nkernel 3858432\nkernel_stack 376832\npagetables 1798144\nsec_pagetables 0\npercpu 2280\nsock 0\nvmalloc 12288\nshmem 19787776\nzswap 0\nzswapped 0\nfile_mapped 21377024\nfile_dirty 0\nfile_writeback 0\nswapcached 0\nanon_thp 16777216\nfile_thp 0\nshmem_thp 0\ninactive_anon 14286848\nactive_anon 34799616\ninactive_file 12918784\nactive_file 37253120\nunevictable 1081344\nslab_reclaimable 665312\nslab_unreclaimable 976192\nslab 1641504\nworkingset_refault_anon 0\nworkingset_refault_file 71286022\nworkingset_activate_anon 0\nworkingset_activate_file 23911079\nworkingset_restore_anon 0\nworkingset_restore_file 314515\nworkingset_nodereclaim 0\npgdemote_kswapd 0\npgdemote_direct 0\npgdemote_khugepaged 0\npgdemote_proactive 0\npgscan 74487306\npgsteal 71336026\npswpin 0\npswpout 0\npgscan_kswapd 0\npgscan_direct 74484787\npgscan_khugepaged 2519\npgscan_proactive 0\npgsteal_kswapd 0\npgsteal_direct 71333867\npgsteal_khugepaged 2159\npgsteal_proactive 0\npgfault 2081900\npgmajfault 111762\npgrefill 111457\npgactivate 2212348\npgdeactivate 0\npglazyfree 0\npglazyfreed 0\nswpin_zero 0\nswpout_zero 0\nzswpin 0\nzswpout 0\nzswpwb 0\nthp_fault_alloc 3\nthp_collapse_alloc 6\nthp_swpout 0\nthp_swpout_fallback 0"
+  }
+}

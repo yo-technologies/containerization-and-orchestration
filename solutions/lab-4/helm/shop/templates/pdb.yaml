@@ -1,0 +1,30 @@
+{{- if .Values.api.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-api
+  labels:
+    {{- include "shop.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.api.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: api
+{{- end }}
+{{- if eq .Values.postgres.pdb.mode "chart" }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}-postgres-budget
+  labels:
+    {{- include "shop.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.postgres.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      cnpg.io/cluster: {{ .Release.Name }}-postgres
+      cnpg.io/instanceRole: primary
+{{- end }}

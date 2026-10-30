@@ -1,0 +1,17 @@
+# Part 7: exceed the batch request while staying below its own memory limit.
+batch:
+  replicas: 1
+  nodeSelector:
+    kubernetes.io/hostname: shop-lab4-worker
+  rollingUpdate:
+    maxUnavailable: "100%"
+    maxSurge: 0
+  cpuWorkers: 0
+  memoryMiB: 512
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 768Mi

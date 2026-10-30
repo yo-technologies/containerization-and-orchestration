@@ -1,0 +1,3 @@
+# Apply after scheduling-pressure.yaml. Keep per-Pod resources unchanged.
+api:
+  replicas: 7

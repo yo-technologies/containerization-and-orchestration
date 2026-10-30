@@ -1,0 +1,20 @@
+{"level":"info","ts":"2026-10-29T23:53:02.936120343Z","msg":"http: TLS handshake error from 10.244.1.14:57394: write tcp 10.244.0.24:8000->10.244.1.14:57394: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936143885Z","msg":"http: TLS handshake error from 10.244.1.14:57364: write tcp 10.244.0.24:8000->10.244.1.14:57364: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.93617651Z","msg":"http: TLS handshake error from 10.244.0.1:59864: write tcp 10.244.0.24:8000->10.244.0.1:59864: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936198426Z","msg":"http: TLS handshake error from 10.244.1.14:47710: write tcp 10.244.0.24:8000->10.244.1.14:47710: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936226093Z","msg":"http: TLS handshake error from 10.244.1.14:57380: write tcp 10.244.0.24:8000->10.244.1.14:57380: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936248176Z","msg":"http: TLS handshake error from 10.244.1.14:47860: write tcp 10.244.0.24:8000->10.244.1.14:47860: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.93627126Z","msg":"http: TLS handshake error from 10.244.1.14:50118: write tcp 10.244.0.24:8000->10.244.1.14:50118: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.93634451Z","msg":"http: TLS handshake error from 10.244.1.14:60468: write tcp 10.244.0.24:8000->10.244.1.14:60468: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936382593Z","msg":"http: TLS handshake error from 10.244.0.1:53646: write tcp 10.244.0.24:8000->10.244.0.1:53646: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.93642526Z","msg":"http: TLS handshake error from 10.244.1.14:39354: write tcp 10.244.0.24:8000->10.244.1.14:39354: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936449718Z","msg":"http: TLS handshake error from 10.244.1.14:34438: write tcp 10.244.0.24:8000->10.244.1.14:34438: write: broken pipe\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936507385Z","msg":"http: TLS handshake error from 10.244.0.1:42054: write tcp 10.244.0.24:8000->10.244.0.1:42054: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:02.936558551Z","msg":"http: TLS handshake error from 10.244.0.1:40046: write tcp 10.244.0.24:8000->10.244.0.1:40046: write: broken pipe\n"}
+{"level":"info","ts":"2026-10-29T23:53:03.735890718Z","msg":"http: TLS handshake error from 10.244.1.14:47372: write tcp 10.244.0.24:8000->10.244.1.14:47372: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:04.23591051Z","msg":"http: TLS handshake error from 10.244.0.1:55282: write tcp 10.244.0.24:8000->10.244.0.1:55282: write: broken pipe\n"}
+{"level":"info","ts":"2026-10-29T23:53:04.335338969Z","msg":"http: TLS handshake error from 10.244.1.14:50122: read tcp 10.244.0.24:8000->10.244.1.14:50122: i/o timeout\n"}
+{"level":"info","ts":"2026-10-29T23:53:04.735527094Z","msg":"http: TLS handshake error from 10.244.1.14:33462: write tcp 10.244.0.24:8000->10.244.1.14:33462: write: broken pipe\n"}
+{"level":"info","ts":"2026-10-29T23:53:05.235193427Z","msg":"http: TLS handshake error from 10.244.1.14:33474: write tcp 10.244.0.24:8000->10.244.1.14:33474: write: broken pipe\n"}
+{"level":"info","ts":"2026-10-29T23:52:53.83551413Z","logger":"controller-runtime.cache","msg":"Warning: event bookmark expired","err":"pkg/mod/k8s.io/client-go@v0.37.0/tools/cache/reflector.go:343: awaiting required bookmark event for initial events stream, no events received for 7m26.099714243s"}
+{"level":"info","ts":"2026-10-29T23:54:09.735597471Z","logger":"postgres","msg":"[controller-runtime] log.SetLogger(...) was never called; logs will not be displayed.","source":"/controller/log/postgres","logging_pod":"shop-postgres-1"}

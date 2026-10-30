@@ -1,0 +1,194 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: shop-require-resources
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: require-resources
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+          - local-path-storage
+          - kyverno
+          - cnpg-system
+          - observability
+    validate:
+      message: CPU/memory requests and limits are required.
+      pattern:
+        spec:
+          containers:
+          - name: '*'
+            resources:
+              requests:
+                cpu: ?*
+                memory: ?*
+              limits:
+                cpu: ?*
+                memory: ?*
+          =(initContainers):
+          - name: '*'
+            resources:
+              requests:
+                cpu: ?*
+                memory: ?*
+              limits:
+                cpu: ?*
+                memory: ?*
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: shop-trusted-images
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: trusted-images
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+          - local-path-storage
+          - kyverno
+          - cnpg-system
+          - observability
+    validate:
+      message: Images must come from the lab or CloudNativePG repositories.
+      foreach:
+      - list: request.object.spec.[containers, initContainers, ephemeralContainers][]
+        deny:
+          conditions:
+            all:
+            - key: '{{ element.image }}'
+              operator: NotEquals
+              value: ghcr.io/itmo-labs/shop:*
+            - key: '{{ element.image }}'
+              operator: NotEquals
+              value: ghcr.io/cloudnative-pg/*
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: shop-require-labels
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: require-labels
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+          - local-path-storage
+          - kyverno
+          - cnpg-system
+          - observability
+    validate:
+      message: app.kubernetes.io/part-of and owner labels are required.
+      pattern:
+        metadata:
+          labels:
+            app.kubernetes.io/part-of: ?*
+            owner: ?*
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: shop-no-privileged
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: no-privileged
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+          - local-path-storage
+          - kyverno
+          - cnpg-system
+          - observability
+    validate:
+      message: Privileged containers are forbidden.
+      pattern:
+        spec:
+          containers:
+          - name: '*'
+            =(securityContext):
+              =(privileged): false
+          =(initContainers):
+          - name: '*'
+            =(securityContext):
+              =(privileged): false
+          =(ephemeralContainers):
+          - name: '*'
+            =(securityContext):
+              =(privileged): false
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: shop-no-host-namespaces
+spec:
+  validationFailureAction: Enforce
+  background: false
+  rules:
+  - name: no-host-namespaces
+    match:
+      any:
+      - resources:
+          kinds:
+          - Pod
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - kube-system
+          - kube-public
+          - kube-node-lease
+          - local-path-storage
+          - kyverno
+          - cnpg-system
+          - observability
+    validate:
+      message: Host network, PID and IPC namespaces are forbidden.
+      pattern:
+        spec:
+          =(hostNetwork): false
+          =(hostPID): false
+          =(hostIPC): false

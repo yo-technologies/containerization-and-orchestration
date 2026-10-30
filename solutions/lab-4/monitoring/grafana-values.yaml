@@ -1,0 +1,24 @@
+# Merge with the installed Lab 2 Grafana values via --reuse-values.
+# Keep its default provider and dashboards; add a separate shop provider.
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: default
+        orgId: 1
+        folder: Labs
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+      - name: shop
+        orgId: 1
+        folder: Labs
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/shop
+dashboardsConfigMaps:
+  shop: shop-dashboard

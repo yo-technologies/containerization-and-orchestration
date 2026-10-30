@@ -1,0 +1,16 @@
+# Part 6: reserve CPU for the scheduler, with idle batch processes.
+# Apply on top of chart defaults with --reset-values -f this-file.
+batch:
+  replicas: 40
+  rollingUpdate:
+    maxUnavailable: "100%"
+    maxSurge: 0
+  cpuWorkers: 0
+  memoryMiB: 0
+  resources:
+    requests:
+      cpu: 500m
+      memory: 16Mi
+    limits:
+      cpu: "2"
+      memory: 64Mi

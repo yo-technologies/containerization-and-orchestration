@@ -1,0 +1,5 @@
+# Keep the same API template throughout pressure and preemption.
+# Returning to chart defaults rolls API again and restores balanced placement.
+api:
+  podAnnotations:
+    lab4.itmo/rollout: sla-preemption-control

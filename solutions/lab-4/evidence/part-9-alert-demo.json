@@ -1,0 +1,3152 @@
+{
+  "started_at": "2026-10-30T20:23:25.748470+00:00",
+  "alert": "ShopAPIUnavailable",
+  "samples": [
+    {
+      "time": "2026-10-30T20:23:26.707009+00:00",
+      "alerts": []
+    },
+    {
+      "time": "2026-10-30T20:23:31.779209+00:00",
+      "alerts": []
+    },
+    {
+      "time": "2026-10-30T20:23:36.850940+00:00",
+      "alerts": []
+    },
+    {
+      "time": "2026-10-30T20:23:41.906194+00:00",
+      "alerts": []
+    },
+    {
+      "time": "2026-10-30T20:23:46.965170+00:00",
+      "alerts": []
+    },
+    {
+      "time": "2026-10-30T20:23:52.031356+00:00",
+      "alerts": []
+    },
+    {
+      "time": "2026-10-30T20:23:57.084974+00:00",
+      "alerts": []
+    },
+    {
+      "time": "2026-10-30T20:24:02.136218+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:07.186998+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:12.303000+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:17.373365+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:22.451759+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:27.521030+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:32.605666+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:37.683198+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:42.750947+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:47.814289+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:52.887744+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:24:57.967399+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "pending",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:25:03.034918+00:00",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "firing",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:25:10.174033+00:00",
+      "phase": "restored",
+      "alerts": [
+        {
+          "labels": {
+            "alertname": "ShopAPIUnavailable",
+            "namespace": "shop",
+            "service": "shop",
+            "severity": "critical"
+          },
+          "annotations": {
+            "summary": "Shop: no API scrape targets available"
+          },
+          "state": "firing",
+          "activeAt": "2026-10-30T20:23:59.125078062Z",
+          "value": "1e+00"
+        }
+      ]
+    },
+    {
+      "time": "2026-10-30T20:25:15.244681+00:00",
+      "phase": "restored",
+      "alerts": []
+    }
+  ],
+  "firing_observed": true,
+  "resolved_observed": true,
+  "outage_helm": "Release \"shop\" has been upgraded. Happy Helming!\nNAME: shop\nLAST DEPLOYED: Fri Oct 30 23:23:25 2026\nNAMESPACE: shop\nSTATUS: deployed\nREVISION: 31\nDESCRIPTION: Upgrade complete\nTEST SUITE: None\n",
+  "restore_helm": "Release \"shop\" has been upgraded. Happy Helming!\nNAME: shop\nLAST DEPLOYED: Fri Oct 30 23:25:03 2026\nNAMESPACE: shop\nSTATUS: deployed\nREVISION: 32\nDESCRIPTION: Upgrade complete\nTEST SUITE: None\n",
+  "restored_at": "2026-10-30T20:25:10.122485+00:00",
+  "pods_after": {
+    "apiVersion": "v1",
+    "items": [
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "annotations": {
+            "lab4.itmo/rollout": "memory-pressure-prep"
+          },
+          "creationTimestamp": "2026-10-30T20:25:03Z",
+          "generateName": "shop-api-5574b66f8d-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "api",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "5574b66f8d"
+          },
+          "name": "shop-api-5574b66f8d-g899r",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-api-5574b66f8d",
+              "uid": "1e994406-b86b-43d2-a7bc-a38500edf47f"
+            }
+          ],
+          "resourceVersion": "527114",
+          "uid": "239d6481-7d92-416a-97a3-2b940ae889c8"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ROLE",
+                  "value": "api"
+                },
+                {
+                  "name": "HEALTH_FAIL",
+                  "value": "false"
+                },
+                {
+                  "name": "DATABASE_URL",
+                  "valueFrom": {
+                    "secretKeyRef": {
+                      "key": "uri",
+                      "name": "shop-postgres-app"
+                    }
+                  }
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "lifecycle": {
+                "preStop": {
+                  "sleep": {
+                    "seconds": 5
+                  }
+                }
+              },
+              "livenessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "initialDelaySeconds": 10,
+                "periodSeconds": 5,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "name": "api",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "failureThreshold": 1,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "periodSeconds": 2,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-worker",
+          "preemptionPolicy": "PreemptLowerPriority",
+          "priority": 100000,
+          "priorityClassName": "shop-critical",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 30,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ],
+          "topologySpreadConstraints": [
+            {
+              "labelSelector": {
+                "matchLabels": {
+                  "app.kubernetes.io/instance": "shop",
+                  "app.kubernetes.io/name": "api"
+                }
+              },
+              "maxSkew": 1,
+              "topologyKey": "kubernetes.io/hostname",
+              "whenUnsatisfiable": "DoNotSchedule"
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "250m",
+            "memory": "100Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:05Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:05Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "250m",
+                "memory": "100Mi"
+              },
+              "containerID": "containerd://ba989f4ecf27bf212bc1739057aa3be0be693fa4a7efc7e1cf3fa67abb00da59",
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imageID": "sha256:0816deff35f22fa1e8057374a14494dfcc18b36982083d3f02e0cb4fe11d4a76",
+              "lastState": {},
+              "name": "api",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-30T20:25:04Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.3",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.3"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Running",
+          "podIP": "10.244.1.96",
+          "podIPs": [
+            {
+              "ip": "10.244.1.96"
+            }
+          ],
+          "qosClass": "Guaranteed",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "232m",
+              "memory": "100Mi"
+            }
+          },
+          "startTime": "2026-10-30T20:25:04Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "annotations": {
+            "lab4.itmo/rollout": "memory-pressure-prep"
+          },
+          "creationTimestamp": "2026-10-30T20:25:03Z",
+          "generateName": "shop-api-5574b66f8d-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "api",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "5574b66f8d"
+          },
+          "name": "shop-api-5574b66f8d-lnwqj",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-api-5574b66f8d",
+              "uid": "1e994406-b86b-43d2-a7bc-a38500edf47f"
+            }
+          ],
+          "resourceVersion": "527113",
+          "uid": "82759ef1-7b99-491a-a44c-980839b4b945"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ROLE",
+                  "value": "api"
+                },
+                {
+                  "name": "HEALTH_FAIL",
+                  "value": "false"
+                },
+                {
+                  "name": "DATABASE_URL",
+                  "valueFrom": {
+                    "secretKeyRef": {
+                      "key": "uri",
+                      "name": "shop-postgres-app"
+                    }
+                  }
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "lifecycle": {
+                "preStop": {
+                  "sleep": {
+                    "seconds": 5
+                  }
+                }
+              },
+              "livenessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "initialDelaySeconds": 10,
+                "periodSeconds": 5,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "name": "api",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "failureThreshold": 1,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "periodSeconds": 2,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-control-plane",
+          "preemptionPolicy": "PreemptLowerPriority",
+          "priority": 100000,
+          "priorityClassName": "shop-critical",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 30,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ],
+          "topologySpreadConstraints": [
+            {
+              "labelSelector": {
+                "matchLabels": {
+                  "app.kubernetes.io/instance": "shop",
+                  "app.kubernetes.io/name": "api"
+                }
+              },
+              "maxSkew": 1,
+              "topologyKey": "kubernetes.io/hostname",
+              "whenUnsatisfiable": "DoNotSchedule"
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "250m",
+            "memory": "100Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:05Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:05Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "250m",
+                "memory": "100Mi"
+              },
+              "containerID": "containerd://9640f16caadfe4ad13be688f4d63ee942ad2348191ce241772fa849bb23eff45",
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imageID": "sha256:0816deff35f22fa1e8057374a14494dfcc18b36982083d3f02e0cb4fe11d4a76",
+              "lastState": {},
+              "name": "api",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-30T20:25:04Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.4",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.4"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Running",
+          "podIP": "10.244.0.83",
+          "podIPs": [
+            {
+              "ip": "10.244.0.83"
+            }
+          ],
+          "qosClass": "Guaranteed",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "232m",
+              "memory": "100Mi"
+            }
+          },
+          "startTime": "2026-10-30T20:25:04Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "annotations": {
+            "lab4.itmo/rollout": "memory-pressure-prep"
+          },
+          "creationTimestamp": "2026-10-30T20:25:03Z",
+          "generateName": "shop-api-5574b66f8d-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "api",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "5574b66f8d"
+          },
+          "name": "shop-api-5574b66f8d-wblsh",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-api-5574b66f8d",
+              "uid": "1e994406-b86b-43d2-a7bc-a38500edf47f"
+            }
+          ],
+          "resourceVersion": "527115",
+          "uid": "ef8786cf-9dd6-49a9-928a-5a67a5ec5889"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ROLE",
+                  "value": "api"
+                },
+                {
+                  "name": "HEALTH_FAIL",
+                  "value": "false"
+                },
+                {
+                  "name": "DATABASE_URL",
+                  "valueFrom": {
+                    "secretKeyRef": {
+                      "key": "uri",
+                      "name": "shop-postgres-app"
+                    }
+                  }
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "lifecycle": {
+                "preStop": {
+                  "sleep": {
+                    "seconds": 5
+                  }
+                }
+              },
+              "livenessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "initialDelaySeconds": 10,
+                "periodSeconds": 5,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "name": "api",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "failureThreshold": 1,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "periodSeconds": 2,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-worker",
+          "preemptionPolicy": "PreemptLowerPriority",
+          "priority": 100000,
+          "priorityClassName": "shop-critical",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 30,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ],
+          "topologySpreadConstraints": [
+            {
+              "labelSelector": {
+                "matchLabels": {
+                  "app.kubernetes.io/instance": "shop",
+                  "app.kubernetes.io/name": "api"
+                }
+              },
+              "maxSkew": 1,
+              "topologyKey": "kubernetes.io/hostname",
+              "whenUnsatisfiable": "DoNotSchedule"
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "250m",
+            "memory": "100Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:04Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:05Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:05Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T20:25:03Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "250m",
+                "memory": "100Mi"
+              },
+              "containerID": "containerd://c50dd6e83faa35179aea9aba73a44e532a42f3145c5e84b49d5841ccbc0f3465",
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imageID": "sha256:0816deff35f22fa1e8057374a14494dfcc18b36982083d3f02e0cb4fe11d4a76",
+              "lastState": {},
+              "name": "api",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-30T20:25:04Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.3",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.3"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Running",
+          "podIP": "10.244.1.97",
+          "podIPs": [
+            {
+              "ip": "10.244.1.97"
+            }
+          ],
+          "qosClass": "Guaranteed",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "232m",
+              "memory": "100Mi"
+            }
+          },
+          "startTime": "2026-10-30T20:25:04Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "creationTimestamp": "2026-10-30T19:49:34Z",
+          "generateName": "shop-batch-6d564d9694-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "batch",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "6d564d9694"
+          },
+          "name": "shop-batch-6d564d9694-sz6zf",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-batch-6d564d9694",
+              "uid": "9bc087b1-d697-4fea-9e6e-9882618d32a8"
+            }
+          ],
+          "resourceVersion": "520555",
+          "uid": "e097ecfa-1e9a-4e79-b340-77f2f04389c0"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "MEMORY_MIB",
+                  "value": "32"
+                },
+                {
+                  "name": "CPU_WORKERS",
+                  "value": "1"
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "name": "batch",
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "128Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-control-plane",
+          "preemptionPolicy": "Never",
+          "priority": -1000,
+          "priorityClassName": "shop-batch",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 10,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "50m",
+            "memory": "64Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:35Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:35Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:35Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:35Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:35Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              },
+              "containerID": "containerd://053b1b27bc83e82f80c4c3cd3000a2b28665bf84fbc3c412ccfc56fa5e303fb7",
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imageID": "docker.io/library/import-2026-10-29@sha256:4dc9c9c4f41deedc1cff6f5968176bd69393af889fa641084e61915afab6ce1c",
+              "lastState": {},
+              "name": "batch",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "128Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-30T19:49:35Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.4",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.4"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Running",
+          "podIP": "10.244.0.82",
+          "podIPs": [
+            {
+              "ip": "10.244.0.82"
+            }
+          ],
+          "qosClass": "Burstable",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "128Mi"
+            },
+            "requests": {
+              "cpu": "28m",
+              "memory": "64Mi"
+            }
+          },
+          "startTime": "2026-10-30T19:49:35Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "creationTimestamp": "2026-10-30T18:59:38Z",
+          "generateName": "shop-batch-f48ccb46-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "batch",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "f48ccb46"
+          },
+          "name": "shop-batch-f48ccb46-gb226",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-batch-f48ccb46",
+              "uid": "ce2a388f-2c5d-4857-ae80-51e59a824aa9"
+            }
+          ],
+          "resourceVersion": "509174",
+          "uid": "45f05e37-22cf-4d89-8f2e-631ff966682f"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "MEMORY_MIB",
+                  "value": "512"
+                },
+                {
+                  "name": "CPU_WORKERS",
+                  "value": "0"
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "name": "batch",
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "768Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-worker",
+          "nodeSelector": {
+            "kubernetes.io/hostname": "shop-lab4-worker"
+          },
+          "preemptionPolicy": "Never",
+          "priority": -1000,
+          "priorityClassName": "shop-batch",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 10,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "50m",
+            "memory": "64Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:00:45Z",
+              "message": "The node was low on resource: memory. Threshold quantity: 5312Mi, available: 5419256Ki. Container batch was using 529152Ki, request is 64Mi, has larger consumption of memory. ",
+              "observedGeneration": 1,
+              "reason": "TerminationByKubelet",
+              "status": "True",
+              "type": "DisruptionTarget"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:00:45Z",
+              "message": "no pod sandbox exists",
+              "observedGeneration": 1,
+              "reason": "PodSandboxNotReady",
+              "status": "False",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T18:59:38Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:00:45Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:00:45Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T18:59:38Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              },
+              "containerID": "containerd://26dc3cdbe187b93c02df39779bd8501cb60c42d602d350a6b6dccb1c3b638adf",
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imageID": "docker.io/library/import-2026-10-29@sha256:4dc9c9c4f41deedc1cff6f5968176bd69393af889fa641084e61915afab6ce1c",
+              "lastState": {},
+              "name": "batch",
+              "ready": false,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "768Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "containerd://26dc3cdbe187b93c02df39779bd8501cb60c42d602d350a6b6dccb1c3b638adf",
+                  "exitCode": 0,
+                  "finishedAt": "2026-10-30T19:00:45Z",
+                  "reason": "Completed",
+                  "startedAt": "2026-10-30T18:59:39Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.3",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.3"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Succeeded",
+          "qosClass": "Burstable",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "768Mi"
+            },
+            "requests": {
+              "cpu": "50m",
+              "memory": "64Mi"
+            }
+          },
+          "startTime": "2026-10-30T18:59:38Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "creationTimestamp": "2026-10-30T19:48:41Z",
+          "generateName": "shop-batch-f48ccb46-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "batch",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "f48ccb46"
+          },
+          "name": "shop-batch-f48ccb46-jkng5",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-batch-f48ccb46",
+              "uid": "ce2a388f-2c5d-4857-ae80-51e59a824aa9"
+            }
+          ],
+          "resourceVersion": "520280",
+          "uid": "69081016-a1e0-4c1c-abbe-b90f6231a8c2"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "MEMORY_MIB",
+                  "value": "512"
+                },
+                {
+                  "name": "CPU_WORKERS",
+                  "value": "0"
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "name": "batch",
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "768Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-worker",
+          "nodeSelector": {
+            "kubernetes.io/hostname": "shop-lab4-worker"
+          },
+          "preemptionPolicy": "Never",
+          "priority": -1000,
+          "priorityClassName": "shop-batch",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 10,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "50m",
+            "memory": "64Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:10Z",
+              "message": "The node was low on resource: memory. Threshold quantity: 5696Mi, available: 5832032Ki. Container batch was using 531148Ki, request is 64Mi, has larger consumption of memory. ",
+              "observedGeneration": 1,
+              "reason": "TerminationByKubelet",
+              "status": "True",
+              "type": "DisruptionTarget"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:10Z",
+              "message": "pod sandbox is not ready",
+              "observedGeneration": 1,
+              "reason": "PodSandboxNotReady",
+              "status": "False",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:48:41Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:10Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:49:10Z",
+              "observedGeneration": 1,
+              "reason": "PodCompleted",
+              "status": "False",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:48:41Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              },
+              "containerID": "containerd://60a8fee5c499fc222af945d648f3349e84e5e9769d31c4f89b6dacfaccdb5b3f",
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imageID": "docker.io/library/import-2026-10-29@sha256:4dc9c9c4f41deedc1cff6f5968176bd69393af889fa641084e61915afab6ce1c",
+              "lastState": {},
+              "name": "batch",
+              "ready": false,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "768Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "containerd://60a8fee5c499fc222af945d648f3349e84e5e9769d31c4f89b6dacfaccdb5b3f",
+                  "exitCode": 0,
+                  "finishedAt": "2026-10-30T19:49:10Z",
+                  "reason": "Completed",
+                  "startedAt": "2026-10-30T19:48:41Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.3",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.3"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Succeeded",
+          "qosClass": "Burstable",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "768Mi"
+            },
+            "requests": {
+              "cpu": "50m",
+              "memory": "64Mi"
+            }
+          },
+          "startTime": "2026-10-30T19:48:41Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "creationTimestamp": "2026-10-30T19:00:45Z",
+          "generateName": "shop-batch-f48ccb46-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "batch",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "f48ccb46"
+          },
+          "name": "shop-batch-f48ccb46-kxpvj",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-batch-f48ccb46",
+              "uid": "ce2a388f-2c5d-4857-ae80-51e59a824aa9"
+            }
+          ],
+          "resourceVersion": "509176",
+          "uid": "3b658f82-7a13-431f-83a2-63803c5b5f77"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "MEMORY_MIB",
+                  "value": "512"
+                },
+                {
+                  "name": "CPU_WORKERS",
+                  "value": "0"
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "name": "batch",
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "768Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-worker",
+          "nodeSelector": {
+            "kubernetes.io/hostname": "shop-lab4-worker"
+          },
+          "preemptionPolicy": "Never",
+          "priority": -1000,
+          "priorityClassName": "shop-batch",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 10,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "50m",
+            "memory": "64Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:01:29Z",
+              "message": "The node was low on resource: memory. Threshold quantity: 5312Mi, available: 5363336Ki. Container batch was using 531148Ki, request is 64Mi, has larger consumption of memory. ",
+              "observedGeneration": 1,
+              "reason": "TerminationByKubelet",
+              "status": "True",
+              "type": "DisruptionTarget"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:01:29Z",
+              "message": "pod sandbox is not ready",
+              "observedGeneration": 1,
+              "reason": "PodSandboxNotReady",
+              "status": "False",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:01:15Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:01:29Z",
+              "observedGeneration": 1,
+              "reason": "PodFailed",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:01:29Z",
+              "observedGeneration": 1,
+              "reason": "PodFailed",
+              "status": "False",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:01:15Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "50m",
+                "memory": "64Mi"
+              },
+              "containerID": "containerd://3dc341dce5af2f84f31db0eb2fa6a7aa789d86be2318c3d7b5861c89876a7025",
+              "image": "ghcr.io/itmo-labs/shop:batch-0.1.0",
+              "imageID": "docker.io/library/import-2026-10-29@sha256:4dc9c9c4f41deedc1cff6f5968176bd69393af889fa641084e61915afab6ce1c",
+              "lastState": {},
+              "name": "batch",
+              "ready": false,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "768Mi"
+                },
+                "requests": {
+                  "cpu": "50m",
+                  "memory": "64Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "containerd://3dc341dce5af2f84f31db0eb2fa6a7aa789d86be2318c3d7b5861c89876a7025",
+                  "exitCode": 137,
+                  "finishedAt": "2026-10-30T19:01:29Z",
+                  "reason": "Error",
+                  "startedAt": "2026-10-30T19:01:15Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.3",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.3"
+            }
+          ],
+          "message": "The node was low on resource: memory. Threshold quantity: 5312Mi, available: 5363336Ki. Container batch was using 531148Ki, request is 64Mi, has larger consumption of memory. ",
+          "observedGeneration": 1,
+          "phase": "Failed",
+          "qosClass": "Burstable",
+          "reason": "Evicted",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "768Mi"
+            },
+            "requests": {
+              "cpu": "50m",
+              "memory": "64Mi"
+            }
+          },
+          "startTime": "2026-10-30T19:01:15Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "annotations": {
+            "cnpg.io/nodeSerial": "1",
+            "cnpg.io/operatorVersion": "1.30.1",
+            "cnpg.io/podEnvHash": "67cb6c757b",
+            "cnpg.io/podSpec": "{\"volumes\":[{\"name\":\"pgdata\",\"persistentVolumeClaim\":{\"claimName\":\"shop-postgres-1\"}},{\"name\":\"scratch-data\",\"emptyDir\":{}},{\"name\":\"shm\",\"emptyDir\":{\"medium\":\"Memory\"}}],\"initContainers\":[{\"name\":\"bootstrap-controller\",\"image\":\"ghcr.io/cloudnative-pg/cloudnative-pg:1.30.1\",\"command\":[\"/manager\",\"bootstrap\",\"/controller/manager\",\"--log-level=info\"],\"resources\":{\"limits\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"},\"requests\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"}},\"volumeMounts\":[{\"name\":\"pgdata\",\"mountPath\":\"/var/lib/postgresql/data\"},{\"name\":\"scratch-data\",\"mountPath\":\"/run\"},{\"name\":\"scratch-data\",\"mountPath\":\"/controller\"},{\"name\":\"shm\",\"mountPath\":\"/dev/shm\"}],\"securityContext\":{\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"runAsNonRoot\":true,\"readOnlyRootFilesystem\":true,\"allowPrivilegeEscalation\":false,\"seccompProfile\":{\"type\":\"RuntimeDefault\"}}}],\"containers\":[{\"name\":\"postgres\",\"image\":\"ghcr.io/cloudnative-pg/postgresql:17.6\",\"command\":[\"/controller/manager\",\"instance\",\"run\",\"--status-port-tls\",\"--log-level=info\"],\"ports\":[{\"name\":\"postgresql\",\"containerPort\":5432,\"protocol\":\"TCP\"},{\"name\":\"metrics\",\"containerPort\":9187,\"protocol\":\"TCP\"},{\"name\":\"status\",\"containerPort\":8000,\"protocol\":\"TCP\"}],\"env\":[{\"name\":\"PGDATA\",\"value\":\"/var/lib/postgresql/data/pgdata\"},{\"name\":\"POD_NAME\",\"value\":\"shop-postgres-1\"},{\"name\":\"NAMESPACE\",\"value\":\"shop\"},{\"name\":\"CLUSTER_NAME\",\"value\":\"shop-postgres\"},{\"name\":\"PSQL_HISTORY\",\"value\":\"/controller/tmp/.psql_history\"},{\"name\":\"PGPORT\",\"value\":\"5432\"},{\"name\":\"PGHOST\",\"value\":\"/controller/run\"},{\"name\":\"TMPDIR\",\"value\":\"/controller/tmp\"}],\"resources\":{\"limits\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"},\"requests\":{\"cpu\":\"500m\",\"memory\":\"256Mi\"}},\"volumeMounts\":[{\"name\":\"pgdata\",\"mountPath\":\"/var/lib/postgresql/data\"},{\"name\":\"scratch-data\",\"mountPath\":\"/run\"},{\"name\":\"scratch-data\",\"mountPath\":\"/controller\"},{\"name\":\"shm\",\"mountPath\":\"/dev/shm\"}],\"livenessProbe\":{\"httpGet\":{\"path\":\"/healthz\",\"port\":8000,\"scheme\":\"HTTPS\"},\"timeoutSeconds\":5,\"periodSeconds\":10},\"readinessProbe\":{\"httpGet\":{\"path\":\"/readyz\",\"port\":8000,\"scheme\":\"HTTPS\"},\"timeoutSeconds\":5,\"periodSeconds\":10},\"startupProbe\":{\"httpGet\":{\"path\":\"/startupz\",\"port\":8000,\"scheme\":\"HTTPS\"},\"timeoutSeconds\":5,\"periodSeconds\":10,\"failureThreshold\":360},\"securityContext\":{\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"runAsNonRoot\":true,\"readOnlyRootFilesystem\":true,\"allowPrivilegeEscalation\":false,\"seccompProfile\":{\"type\":\"RuntimeDefault\"}}}],\"terminationGracePeriodSeconds\":1800,\"serviceAccountName\":\"shop-postgres\",\"securityContext\":{\"runAsUser\":26,\"runAsGroup\":26,\"runAsNonRoot\":true,\"fsGroup\":26,\"seccompProfile\":{\"type\":\"RuntimeDefault\"}},\"hostname\":\"shop-postgres-1\",\"affinity\":{\"podAntiAffinity\":{\"preferredDuringSchedulingIgnoredDuringExecution\":[{\"weight\":100,\"podAffinityTerm\":{\"labelSelector\":{\"matchExpressions\":[{\"key\":\"cnpg.io/cluster\",\"operator\":\"In\",\"values\":[\"shop-postgres\"]},{\"key\":\"cnpg.io/podRole\",\"operator\":\"In\",\"values\":[\"instance\"]}]},\"topologyKey\":\"kubernetes.io/hostname\"}}]}},\"priorityClassName\":\"shop-critical\"}"
+          },
+          "creationTimestamp": "2026-10-30T19:10:18Z",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/component": "database",
+            "app.kubernetes.io/instance": "shop-postgres",
+            "app.kubernetes.io/managed-by": "cloudnative-pg",
+            "app.kubernetes.io/name": "postgresql",
+            "app.kubernetes.io/part-of": "shop",
+            "app.kubernetes.io/version": "17",
+            "cnpg.io/cluster": "shop-postgres",
+            "cnpg.io/instanceName": "shop-postgres-1",
+            "cnpg.io/instanceRole": "primary",
+            "cnpg.io/podRole": "instance",
+            "owner": "itmo",
+            "role": "primary"
+          },
+          "name": "shop-postgres-1",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "postgresql.cnpg.io/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "Cluster",
+              "name": "shop-postgres",
+              "uid": "286bc89d-0a31-49b8-993d-a4c92a3c2ed6"
+            }
+          ],
+          "resourceVersion": "510748",
+          "uid": "469a4d65-bd39-4696-82c3-8e4b74ed2672"
+        },
+        "spec": {
+          "affinity": {
+            "podAntiAffinity": {
+              "preferredDuringSchedulingIgnoredDuringExecution": [
+                {
+                  "podAffinityTerm": {
+                    "labelSelector": {
+                      "matchExpressions": [
+                        {
+                          "key": "cnpg.io/cluster",
+                          "operator": "In",
+                          "values": [
+                            "shop-postgres"
+                          ]
+                        },
+                        {
+                          "key": "cnpg.io/podRole",
+                          "operator": "In",
+                          "values": [
+                            "instance"
+                          ]
+                        }
+                      ]
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                  },
+                  "weight": 100
+                }
+              ]
+            }
+          },
+          "containers": [
+            {
+              "command": [
+                "/controller/manager",
+                "instance",
+                "run",
+                "--status-port-tls",
+                "--log-level=info"
+              ],
+              "env": [
+                {
+                  "name": "PGDATA",
+                  "value": "/var/lib/postgresql/data/pgdata"
+                },
+                {
+                  "name": "POD_NAME",
+                  "value": "shop-postgres-1"
+                },
+                {
+                  "name": "NAMESPACE",
+                  "value": "shop"
+                },
+                {
+                  "name": "CLUSTER_NAME",
+                  "value": "shop-postgres"
+                },
+                {
+                  "name": "PSQL_HISTORY",
+                  "value": "/controller/tmp/.psql_history"
+                },
+                {
+                  "name": "PGPORT",
+                  "value": "5432"
+                },
+                {
+                  "name": "PGHOST",
+                  "value": "/controller/run"
+                },
+                {
+                  "name": "TMPDIR",
+                  "value": "/controller/tmp"
+                }
+              ],
+              "image": "ghcr.io/cloudnative-pg/postgresql:17.6",
+              "imagePullPolicy": "IfNotPresent",
+              "livenessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/healthz",
+                  "port": 8000,
+                  "scheme": "HTTPS"
+                },
+                "periodSeconds": 10,
+                "successThreshold": 1,
+                "timeoutSeconds": 5
+              },
+              "name": "postgres",
+              "ports": [
+                {
+                  "containerPort": 5432,
+                  "name": "postgresql",
+                  "protocol": "TCP"
+                },
+                {
+                  "containerPort": 9187,
+                  "name": "metrics",
+                  "protocol": "TCP"
+                },
+                {
+                  "containerPort": 8000,
+                  "name": "status",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/readyz",
+                  "port": 8000,
+                  "scheme": "HTTPS"
+                },
+                "periodSeconds": 10,
+                "successThreshold": 1,
+                "timeoutSeconds": 5
+              },
+              "resources": {
+                "limits": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                },
+                "requests": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true,
+                "runAsNonRoot": true,
+                "seccompProfile": {
+                  "type": "RuntimeDefault"
+                }
+              },
+              "startupProbe": {
+                "failureThreshold": 360,
+                "httpGet": {
+                  "path": "/startupz",
+                  "port": 8000,
+                  "scheme": "HTTPS"
+                },
+                "periodSeconds": 10,
+                "successThreshold": 1,
+                "timeoutSeconds": 5
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "volumeMounts": [
+                {
+                  "mountPath": "/var/lib/postgresql/data",
+                  "name": "pgdata"
+                },
+                {
+                  "mountPath": "/run",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/controller",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/dev/shm",
+                  "name": "shm"
+                },
+                {
+                  "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                  "name": "kube-api-access-r29fj",
+                  "readOnly": true
+                }
+              ]
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "hostname": "shop-postgres-1",
+          "initContainers": [
+            {
+              "command": [
+                "/manager",
+                "bootstrap",
+                "/controller/manager",
+                "--log-level=info"
+              ],
+              "image": "ghcr.io/cloudnative-pg/cloudnative-pg:1.30.1",
+              "imagePullPolicy": "IfNotPresent",
+              "name": "bootstrap-controller",
+              "resources": {
+                "limits": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                },
+                "requests": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true,
+                "runAsNonRoot": true,
+                "seccompProfile": {
+                  "type": "RuntimeDefault"
+                }
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File",
+              "volumeMounts": [
+                {
+                  "mountPath": "/var/lib/postgresql/data",
+                  "name": "pgdata"
+                },
+                {
+                  "mountPath": "/run",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/controller",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/dev/shm",
+                  "name": "shm"
+                },
+                {
+                  "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                  "name": "kube-api-access-r29fj",
+                  "readOnly": true
+                }
+              ]
+            }
+          ],
+          "nodeName": "shop-lab4-control-plane",
+          "preemptionPolicy": "PreemptLowerPriority",
+          "priority": 100000,
+          "priorityClassName": "shop-critical",
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "fsGroup": 26,
+            "runAsGroup": 26,
+            "runAsNonRoot": true,
+            "runAsUser": 26,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "shop-postgres",
+          "serviceAccountName": "shop-postgres",
+          "terminationGracePeriodSeconds": 1800,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ],
+          "volumes": [
+            {
+              "name": "pgdata",
+              "persistentVolumeClaim": {
+                "claimName": "shop-postgres-1"
+              }
+            },
+            {
+              "emptyDir": {},
+              "name": "scratch-data"
+            },
+            {
+              "emptyDir": {
+                "medium": "Memory"
+              },
+              "name": "shm"
+            },
+            {
+              "name": "kube-api-access-r29fj",
+              "projected": {
+                "defaultMode": 420,
+                "sources": [
+                  {
+                    "serviceAccountToken": {
+                      "expirationSeconds": 3607,
+                      "path": "token"
+                    }
+                  },
+                  {
+                    "configMap": {
+                      "items": [
+                        {
+                          "key": "ca.crt",
+                          "path": "ca.crt"
+                        }
+                      ],
+                      "name": "kube-root-ca.crt"
+                    }
+                  },
+                  {
+                    "downwardAPI": {
+                      "items": [
+                        {
+                          "fieldRef": {
+                            "apiVersion": "v1",
+                            "fieldPath": "metadata.namespace"
+                          },
+                          "path": "namespace"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "500m",
+            "memory": "256Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:10:18Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:10:20Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:10:29Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:10:29Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T19:10:18Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "500m",
+                "memory": "256Mi"
+              },
+              "containerID": "containerd://5b04af0e106e780ac1ecf05ac67016eb28a0b2216e29ffaacb15ec1f988c28e6",
+              "image": "ghcr.io/cloudnative-pg/postgresql:17.6",
+              "imageID": "ghcr.io/cloudnative-pg/postgresql@sha256:30b304a2e300ed80b6d1b740e4369e9b0f25599fb518de78c01fd9f25531791b",
+              "lastState": {},
+              "name": "postgres",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                },
+                "requests": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-30T19:10:20Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 26,
+                  "supplementalGroups": [
+                    26,
+                    101
+                  ],
+                  "uid": 26
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/var/lib/postgresql/data",
+                  "name": "pgdata"
+                },
+                {
+                  "mountPath": "/run",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/controller",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/dev/shm",
+                  "name": "shm"
+                },
+                {
+                  "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                  "name": "kube-api-access-r29fj",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ],
+          "hostIP": "172.19.0.4",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.4"
+            }
+          ],
+          "initContainerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "500m",
+                "memory": "256Mi"
+              },
+              "containerID": "containerd://6880f799c145efa349ca4451a5ff2497cf2f8ba9d0d6dc72c25e0f3a5666dc99",
+              "image": "ghcr.io/cloudnative-pg/cloudnative-pg:1.30.1",
+              "imageID": "ghcr.io/cloudnative-pg/cloudnative-pg@sha256:923c267ec29636db3bee20f993d0ec4973fa22998e1adad37da79e4d32b5bc07",
+              "lastState": {},
+              "name": "bootstrap-controller",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                },
+                "requests": {
+                  "cpu": "500m",
+                  "memory": "256Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": false,
+              "state": {
+                "terminated": {
+                  "containerID": "containerd://6880f799c145efa349ca4451a5ff2497cf2f8ba9d0d6dc72c25e0f3a5666dc99",
+                  "exitCode": 0,
+                  "finishedAt": "2026-10-30T19:10:19Z",
+                  "reason": "Completed",
+                  "startedAt": "2026-10-30T19:10:19Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 26,
+                  "supplementalGroups": [
+                    26
+                  ],
+                  "uid": 26
+                }
+              },
+              "volumeMounts": [
+                {
+                  "mountPath": "/var/lib/postgresql/data",
+                  "name": "pgdata"
+                },
+                {
+                  "mountPath": "/run",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/controller",
+                  "name": "scratch-data"
+                },
+                {
+                  "mountPath": "/dev/shm",
+                  "name": "shm"
+                },
+                {
+                  "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                  "name": "kube-api-access-r29fj",
+                  "readOnly": true,
+                  "recursiveReadOnly": "Disabled"
+                }
+              ]
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Running",
+          "podIP": "10.244.0.64",
+          "podIPs": [
+            {
+              "ip": "10.244.0.64"
+            }
+          ],
+          "qosClass": "Guaranteed",
+          "resources": {
+            "limits": {
+              "cpu": "500m",
+              "memory": "256Mi"
+            },
+            "requests": {
+              "cpu": "489m",
+              "memory": "256Mi"
+            }
+          },
+          "startTime": "2026-10-30T19:10:18Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "creationTimestamp": "2026-10-29T22:53:24Z",
+          "generateName": "shop-worker-67d568dfdf-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "worker",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "67d568dfdf"
+          },
+          "name": "shop-worker-67d568dfdf-gt759",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-worker-67d568dfdf",
+              "uid": "d484e56a-ffb5-48ad-8fcf-82dfa2aed47c"
+            }
+          ],
+          "resourceVersion": "496982",
+          "uid": "c6e6a5c1-e352-4a39-908b-78f350f2a41f"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ROLE",
+                  "value": "worker"
+                },
+                {
+                  "name": "HEALTH_FAIL",
+                  "value": "false"
+                },
+                {
+                  "name": "DATABASE_URL",
+                  "valueFrom": {
+                    "secretKeyRef": {
+                      "key": "uri",
+                      "name": "shop-postgres-app"
+                    }
+                  }
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "lifecycle": {
+                "preStop": {
+                  "sleep": {
+                    "seconds": 5
+                  }
+                }
+              },
+              "livenessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "initialDelaySeconds": 10,
+                "periodSeconds": 5,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "name": "worker",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "failureThreshold": 1,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "periodSeconds": 2,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "10m",
+                  "memory": "100Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-control-plane",
+          "preemptionPolicy": "PreemptLowerPriority",
+          "priority": 0,
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 30,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "10m",
+            "memory": "100Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:53:26Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:53:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T18:01:43Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-30T18:01:43Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:53:25Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "10m",
+                "memory": "100Mi"
+              },
+              "containerID": "containerd://401b2cc970b22c3a66be13bc151d3a781af51c6e7ba5c0549e451ebd0ca13e72",
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imageID": "sha256:0816deff35f22fa1e8057374a14494dfcc18b36982083d3f02e0cb4fe11d4a76",
+              "lastState": {},
+              "name": "worker",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "10m",
+                  "memory": "100Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-29T22:53:27Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.4",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.4"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Running",
+          "podIP": "10.244.0.16",
+          "podIPs": [
+            {
+              "ip": "10.244.0.16"
+            }
+          ],
+          "qosClass": "Burstable",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "memory": "100Mi"
+            }
+          },
+          "startTime": "2026-10-29T22:53:25Z"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "creationTimestamp": "2026-10-29T22:53:33Z",
+          "generateName": "shop-worker-67d568dfdf-",
+          "generation": 1,
+          "labels": {
+            "app.kubernetes.io/instance": "shop",
+            "app.kubernetes.io/managed-by": "Helm",
+            "app.kubernetes.io/name": "worker",
+            "app.kubernetes.io/part-of": "shop",
+            "owner": "itmo",
+            "pod-template-hash": "67d568dfdf"
+          },
+          "name": "shop-worker-67d568dfdf-rh5v2",
+          "namespace": "shop",
+          "ownerReferences": [
+            {
+              "apiVersion": "apps/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "ReplicaSet",
+              "name": "shop-worker-67d568dfdf",
+              "uid": "d484e56a-ffb5-48ad-8fcf-82dfa2aed47c"
+            }
+          ],
+          "resourceVersion": "282869",
+          "uid": "829261c2-3f45-4eed-ba52-da858e0bfc78"
+        },
+        "spec": {
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "APP_ROLE",
+                  "value": "worker"
+                },
+                {
+                  "name": "HEALTH_FAIL",
+                  "value": "false"
+                },
+                {
+                  "name": "DATABASE_URL",
+                  "valueFrom": {
+                    "secretKeyRef": {
+                      "key": "uri",
+                      "name": "shop-postgres-app"
+                    }
+                  }
+                }
+              ],
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imagePullPolicy": "IfNotPresent",
+              "lifecycle": {
+                "preStop": {
+                  "sleep": {
+                    "seconds": 5
+                  }
+                }
+              },
+              "livenessProbe": {
+                "failureThreshold": 3,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "initialDelaySeconds": 10,
+                "periodSeconds": 5,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "name": "worker",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http",
+                  "protocol": "TCP"
+                }
+              ],
+              "readinessProbe": {
+                "failureThreshold": 1,
+                "httpGet": {
+                  "path": "/health",
+                  "port": "http",
+                  "scheme": "HTTP"
+                },
+                "periodSeconds": 2,
+                "successThreshold": 1,
+                "timeoutSeconds": 1
+              },
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "10m",
+                  "memory": "100Mi"
+                }
+              },
+              "securityContext": {
+                "allowPrivilegeEscalation": false,
+                "capabilities": {
+                  "drop": [
+                    "ALL"
+                  ]
+                },
+                "privileged": false,
+                "readOnlyRootFilesystem": true
+              },
+              "terminationMessagePath": "/dev/termination-log",
+              "terminationMessagePolicy": "File"
+            }
+          ],
+          "dnsPolicy": "ClusterFirst",
+          "enableServiceLinks": true,
+          "nodeName": "shop-lab4-worker",
+          "preemptionPolicy": "PreemptLowerPriority",
+          "priority": 0,
+          "restartPolicy": "Always",
+          "schedulerName": "default-scheduler",
+          "securityContext": {
+            "runAsGroup": 65532,
+            "runAsNonRoot": true,
+            "runAsUser": 65532,
+            "seccompProfile": {
+              "type": "RuntimeDefault"
+            }
+          },
+          "serviceAccount": "default",
+          "serviceAccountName": "default",
+          "terminationGracePeriodSeconds": 30,
+          "tolerations": [
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/not-ready",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            },
+            {
+              "effect": "NoExecute",
+              "key": "node.kubernetes.io/unreachable",
+              "operator": "Exists",
+              "tolerationSeconds": 300
+            }
+          ]
+        },
+        "status": {
+          "allocatedResources": {
+            "cpu": "10m",
+            "memory": "100Mi"
+          },
+          "conditions": [
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:53:34Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodReadyToStartContainers"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:53:33Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Initialized"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:57:53Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "Ready"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:57:53Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "ContainersReady"
+            },
+            {
+              "lastProbeTime": null,
+              "lastTransitionTime": "2026-10-29T22:53:33Z",
+              "observedGeneration": 1,
+              "status": "True",
+              "type": "PodScheduled"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "allocatedResources": {
+                "cpu": "10m",
+                "memory": "100Mi"
+              },
+              "containerID": "containerd://63c1b0b7997a9dbf710634bcabcaf7f7aa76893b499cd65678f55d00e651b5dd",
+              "image": "ghcr.io/itmo-labs/shop:0.1.0",
+              "imageID": "sha256:0816deff35f22fa1e8057374a14494dfcc18b36982083d3f02e0cb4fe11d4a76",
+              "lastState": {},
+              "name": "worker",
+              "ready": true,
+              "resources": {
+                "limits": {
+                  "cpu": "250m",
+                  "memory": "100Mi"
+                },
+                "requests": {
+                  "cpu": "10m",
+                  "memory": "100Mi"
+                }
+              },
+              "restartCount": 0,
+              "started": true,
+              "state": {
+                "running": {
+                  "startedAt": "2026-10-29T22:53:34Z"
+                }
+              },
+              "user": {
+                "linux": {
+                  "gid": 65532,
+                  "supplementalGroups": [
+                    65532
+                  ],
+                  "uid": 65532
+                }
+              }
+            }
+          ],
+          "hostIP": "172.19.0.3",
+          "hostIPs": [
+            {
+              "ip": "172.19.0.3"
+            }
+          ],
+          "observedGeneration": 1,
+          "phase": "Running",
+          "podIP": "10.244.1.23",
+          "podIPs": [
+            {
+              "ip": "10.244.1.23"
+            }
+          ],
+          "qosClass": "Burstable",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "memory": "100Mi"
+            }
+          },
+          "startTime": "2026-10-29T22:53:33Z"
+        }
+      }
+    ],
+    "kind": "List",
+    "metadata": {
+      "resourceVersion": ""
+    }
+  },
+  "completed_at": "2026-10-30T20:25:15.305157+00:00"
+}

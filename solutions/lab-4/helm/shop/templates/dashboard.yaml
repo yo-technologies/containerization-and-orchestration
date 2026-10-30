@@ -1,0 +1,12 @@
+{{- if and .Values.monitoring.enabled .Values.monitoring.dashboard.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dashboard
+  namespace: {{ .Values.monitoring.dashboard.namespace | quote }}
+  labels:
+    {{- include "shop.labels" . | nindent 4 }}
+data:
+  shop.json: |
+    {{- .Files.Get "dashboards/shop.json" | replace "__NAMESPACE__" .Release.Namespace | replace "__API_SERVICE__" (printf "%s-api" .Release.Name) | replace "__RELEASE__" .Release.Name | nindent 4 }}
+{{- end }}

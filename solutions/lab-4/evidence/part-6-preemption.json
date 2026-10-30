@@ -1,0 +1,117 @@
+{
+  "checked_at": "2026-10-30T18:18:53.721813+00:00",
+  "api": [
+    {
+      "name": "shop-api-8c4d88468-442kh",
+      "uid": "24781f02-5043-4c75-a629-05056248d493",
+      "node": "shop-lab4-control-plane",
+      "ready": true,
+      "priority": 100000,
+      "qos": "Guaranteed"
+    },
+    {
+      "name": "shop-api-8c4d88468-8x5lm",
+      "uid": "53baf1f2-4966-454a-a5c5-00740217273a",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "priority": 100000,
+      "qos": "Guaranteed"
+    },
+    {
+      "name": "shop-api-8c4d88468-ftr7b",
+      "uid": "09c12a5d-2c0d-4894-956d-20b3a3758c61",
+      "node": "shop-lab4-control-plane",
+      "ready": true,
+      "priority": 100000,
+      "qos": "Guaranteed"
+    },
+    {
+      "name": "shop-api-8c4d88468-h74gk",
+      "uid": "6f519c9b-dc9c-40c3-96a7-313f638bdd9b",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "priority": 100000,
+      "qos": "Guaranteed"
+    },
+    {
+      "name": "shop-api-8c4d88468-lclzl",
+      "uid": "64bf4621-8a1d-4b75-a37f-b9b624df9b52",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "priority": 100000,
+      "qos": "Guaranteed"
+    },
+    {
+      "name": "shop-api-8c4d88468-rmsdx",
+      "uid": "e0ab6dcd-1ab4-4d96-ad0d-2cb67ef7b547",
+      "node": "shop-lab4-control-plane",
+      "ready": true,
+      "priority": 100000,
+      "qos": "Guaranteed"
+    },
+    {
+      "name": "shop-api-8c4d88468-t5zqj",
+      "uid": "418e00d0-4e7d-46b1-8926-e9ca8339380d",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "priority": 100000,
+      "qos": "Guaranteed"
+    }
+  ],
+  "api_per_node": {
+    "shop-lab4-control-plane": 3,
+    "shop-lab4-worker": 4
+  },
+  "batch_phases": {
+    "Running": 24,
+    "Pending": 16
+  },
+  "events": [
+    {
+      "victim": "shop-batch-5c487c65c-rbtp8",
+      "victim_uid": "4896c610-2564-4bfa-ae28-6b222581848c",
+      "message": "Preempted by pod 418e00d0-4e7d-46b1-8926-e9ca8339380d on node shop-lab4-worker",
+      "preemptor_api": [
+        "shop-api-8c4d88468-t5zqj"
+      ],
+      "firstTimestamp": null,
+      "lastTimestamp": null,
+      "count": null,
+      "eventTime": "2026-10-30T18:17:26.556214Z",
+      "created_at": "2026-10-30T18:17:26Z",
+      "series": null
+    },
+    {
+      "victim": "shop-batch-5c487c65c-rbtp8",
+      "victim_uid": "4896c610-2564-4bfa-ae28-6b222581848c",
+      "message": "Preempted by pod 64bf4621-8a1d-4b75-a37f-b9b624df9b52 on node shop-lab4-worker",
+      "preemptor_api": [
+        "shop-api-8c4d88468-lclzl"
+      ],
+      "firstTimestamp": null,
+      "lastTimestamp": null,
+      "count": null,
+      "eventTime": "2026-10-30T18:17:26.563436Z",
+      "created_at": "2026-10-30T18:17:26Z",
+      "series": null
+    },
+    {
+      "victim": "shop-batch-5c487c65c-xmbkn",
+      "victim_uid": "8cfde504-7b65-4215-a476-94818596934a",
+      "message": "Preempted by pod 09c12a5d-2c0d-4894-956d-20b3a3758c61 on node shop-lab4-control-plane",
+      "preemptor_api": [
+        "shop-api-8c4d88468-ftr7b"
+      ],
+      "firstTimestamp": null,
+      "lastTimestamp": null,
+      "count": null,
+      "eventTime": "2026-10-30T18:17:26.109419Z",
+      "created_at": "2026-10-30T18:17:26Z",
+      "series": {
+        "count": 2,
+        "lastObservedTime": "2026-10-30T18:17:26.169313Z"
+      }
+    }
+  ],
+  "unique_victims": 2
+}

@@ -1,0 +1,23 @@
+{
+  "checked_at": "2026-10-30T19:25:40.139782+00:00",
+  "pod_uid": "469a4d65-bd39-4696-82c3-8e4b74ed2672",
+  "ready": true,
+  "restarts": 0,
+  "resources": {
+    "limits": {
+      "cpu": "500m",
+      "memory": "256Mi"
+    },
+    "requests": {
+      "cpu": "500m",
+      "memory": "256Mi"
+    }
+  },
+  "cgroup": {
+    "memory.current": "151351296",
+    "memory.peak": "156327936",
+    "memory.max": "268435456",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+    "memory.pressure": "some avg10=0.06 avg60=0.02 avg300=0.00 total=29954\nfull avg10=0.06 avg60=0.02 avg300=0.00 total=29954"
+  }
+}

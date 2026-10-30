@@ -1,0 +1,3 @@
+# Stop replacement pressure Pods after the first recorded eviction.
+batch:
+  replicas: 0

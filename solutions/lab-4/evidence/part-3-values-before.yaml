@@ -1,0 +1,52 @@
+image:
+  repository: ghcr.io/itmo-labs/shop
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+api:
+  replicas: 3
+  imageTag: "0.1.0"
+  healthFail: false
+  spreading:
+    # The mechanism is chosen now; enable it for the spreading experiment.
+    enabled: false
+    mechanism: topologySpreadConstraints # or podAntiAffinity (required)
+  service:
+    type: NodePort
+    nodePort: 30080
+worker:
+  replicas: 2
+  imageTag: "0.1.0"
+  healthFail: false
+batch:
+  enabled: true
+  replicas: 1
+  imageTag: "batch-0.1.0"
+  memoryMiB: 32
+  cpuWorkers: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+resources:
+  requests:
+    cpu: 25m
+    memory: 32Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi
+postgres:
+  instances: 1
+  image: ghcr.io/cloudnative-pg/postgresql:17.6
+  storage: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+monitoring:
+  enabled: true

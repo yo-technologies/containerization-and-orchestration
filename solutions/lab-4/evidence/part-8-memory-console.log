@@ -1,0 +1,34 @@
+Applying 512 MiB batch buffer on shop-lab4-worker; threshold 5696Mi.
+MemoryPressure=False; batch=[('shop-batch-f48ccb46-jkng5', 'Pending', None)]
+MemoryPressure=False; batch=[('shop-batch-f48ccb46-jkng5', 'Running', None)]
+MemoryPressure=True; batch=[('shop-batch-f48ccb46-jkng5', 'Running', None)]
+MemoryPressure=True; batch=[('shop-batch-f48ccb46-2p9fl', 'Pending', None), ('shop-batch-f48ccb46-jkng5', 'Succeeded', None)]
+Evicted shop-batch-f48ccb46-jkng5: The node was low on resource: memory. Threshold quantity: 5696Mi, available: 5832032Ki. Container batch was using 531148Ki, request is 64Mi, has larger consumption of memory. 
+Stopping batch pressure and collecting recovery observations.
+Restoring normal Helm values.
+Restoring original worker kubelet configuration.
+Error from server (ServiceUnavailable): error trying to reach service: dial tcp 172.19.0.3:10250: connect: connection refused
+{
+  "node": "shop-lab4-worker",
+  "memory_available_Mi": 6247.9,
+  "evictionHard": {
+    "imagefs.available": "0%",
+    "nodefs.available": "0%",
+    "nodefs.inodesFree": "0%"
+  },
+  "pressure_transition": "5m0s",
+  "conditions": {
+    "MemoryPressure": "False",
+    "DiskPressure": "False",
+    "PIDPressure": "False",
+    "Ready": "True"
+  }
+}
+{
+  "completed": true,
+  "saw_memory_pressure": true,
+  "critical_ready_all_samples": true,
+  "victim": "shop-batch-f48ccb46-jkng5",
+  "cleanup_errors": [],
+  "evidence": "/Users/semyondanshin/Programming/Uni/containerization-and-orchestration/solutions/lab-4/evidence/part-8-memory.json"
+}

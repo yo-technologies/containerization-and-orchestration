@@ -1,0 +1,31 @@
+replicas: 1
+namespaces: shop
+collectors:
+  - pods
+  - replicasets
+  - deployments
+  - statefulsets
+  - daemonsets
+  - jobs
+  - cronjobs
+  - nodes
+  - horizontalpodautoscalers
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+# Use the operator monitor instead of annotation-based discovery.
+prometheusScrape: false
+prometheus:
+  monitor:
+    enabled: true
+    additionalLabels:
+      monitoring: lab2
+    http:
+      interval: 15s
+      honorLabels: true

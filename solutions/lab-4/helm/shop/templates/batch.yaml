@@ -1,0 +1,57 @@
+{{- if .Values.batch.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-batch
+  labels:
+    {{- include "shop.labels" . | nindent 4 }}
+    app.kubernetes.io/name: batch
+spec:
+  replicas: {{ .Values.batch.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      {{- toYaml .Values.batch.rollingUpdate | nindent 6 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: batch
+  template:
+    metadata:
+      labels:
+        {{- include "shop.labels" . | nindent 8 }}
+        app.kubernetes.io/name: batch
+    spec:
+      {{- with .Values.batch.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.batch.priorityClass }}
+      priorityClassName: {{ printf "%s-%s" $.Release.Name . | quote }}
+      {{- end }}
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 10
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: batch
+          image: "{{ .Values.image.repository }}:{{ .Values.batch.imageTag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MEMORY_MIB
+              value: {{ .Values.batch.memoryMiB | quote }}
+            - name: CPU_WORKERS
+              value: {{ .Values.batch.cpuWorkers | quote }}
+          resources:
+            {{- toYaml .Values.batch.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+{{- end }}

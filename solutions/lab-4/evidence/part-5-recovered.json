@@ -1,0 +1,225 @@
+{
+  "checked_at": "2026-10-30T00:03:28.822712+00:00",
+  "helm": {
+    "revision": 9,
+    "status": "deployed",
+    "description": "Upgrade complete"
+  },
+  "pods": [
+    {
+      "name": "shop-api-8c4d88468-8x5lm",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "qos": "Guaranteed",
+      "priorityClassName": "shop-critical",
+      "priority": 100000,
+      "containers": [
+        {
+          "name": "api",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      ],
+      "initContainers": []
+    },
+    {
+      "name": "shop-api-8c4d88468-h74gk",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "qos": "Guaranteed",
+      "priorityClassName": "shop-critical",
+      "priority": 100000,
+      "containers": [
+        {
+          "name": "api",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      ],
+      "initContainers": []
+    },
+    {
+      "name": "shop-api-8c4d88468-rmsdx",
+      "node": "shop-lab4-control-plane",
+      "ready": true,
+      "qos": "Guaranteed",
+      "priorityClassName": "shop-critical",
+      "priority": 100000,
+      "containers": [
+        {
+          "name": "api",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      ],
+      "initContainers": []
+    },
+    {
+      "name": "shop-batch-6d564d9694-qmqn9",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "qos": "Burstable",
+      "priorityClassName": "shop-batch",
+      "priority": -1000,
+      "containers": [
+        {
+          "name": "batch",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "128Mi"
+            },
+            "requests": {
+              "cpu": "50m",
+              "memory": "64Mi"
+            }
+          }
+        }
+      ],
+      "initContainers": []
+    },
+    {
+      "name": "shop-postgres-1",
+      "node": "shop-lab4-control-plane",
+      "ready": true,
+      "qos": "Guaranteed",
+      "priorityClassName": "shop-critical",
+      "priority": 100000,
+      "containers": [
+        {
+          "name": "postgres",
+          "resources": {
+            "limits": {
+              "cpu": "500m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "500m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      ],
+      "initContainers": [
+        {
+          "name": "bootstrap-controller",
+          "resources": {
+            "limits": {
+              "cpu": "500m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "500m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "shop-worker-67d568dfdf-gt759",
+      "node": "shop-lab4-control-plane",
+      "ready": true,
+      "qos": "Burstable",
+      "priorityClassName": null,
+      "priority": 0,
+      "containers": [
+        {
+          "name": "worker",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "10m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      ],
+      "initContainers": []
+    },
+    {
+      "name": "shop-worker-67d568dfdf-rh5v2",
+      "node": "shop-lab4-worker",
+      "ready": true,
+      "qos": "Burstable",
+      "priorityClassName": null,
+      "priority": 0,
+      "containers": [
+        {
+          "name": "worker",
+          "resources": {
+            "limits": {
+              "cpu": "250m",
+              "memory": "100Mi"
+            },
+            "requests": {
+              "cpu": "10m",
+              "memory": "100Mi"
+            }
+          }
+        }
+      ],
+      "initContainers": []
+    }
+  ],
+  "cluster_phase": "Cluster in healthy state",
+  "pdbs": [
+    {
+      "name": "shop-api",
+      "minAvailable": 2,
+      "currentHealthy": 3,
+      "desiredHealthy": 2,
+      "disruptionsAllowed": 1
+    },
+    {
+      "name": "shop-postgres-budget",
+      "minAvailable": 1,
+      "currentHealthy": 1,
+      "desiredHealthy": 1,
+      "disruptionsAllowed": 0
+    }
+  ],
+  "existing_order": {
+    "id": 9003,
+    "item": "after-krr",
+    "quantity": 1,
+    "processed": true,
+    "created_at": "2026-10-29T22:56:52.443347Z",
+    "processed_at": "2026-10-29T22:56:52.95928Z"
+  },
+  "created_order": {
+    "id": 9004,
+    "item": "after-cpu-recovery",
+    "quantity": 1,
+    "processed": true,
+    "created_at": "2026-10-30T00:03:27.432686Z",
+    "processed_at": "2026-10-30T00:03:27.474021Z"
+  }
+}

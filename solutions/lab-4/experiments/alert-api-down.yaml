@@ -1,0 +1,3 @@
+# Controlled outage to demonstrate ShopAPIUnavailable. Restore defaults afterwards.
+api:
+  replicas: 0

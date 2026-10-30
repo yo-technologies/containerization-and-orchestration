@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-10-29T23:11:56.597110+00:00",
+  "desired_replicas": 3,
+  "status": {
+    "observedGeneration": 3,
+    "updatedReplicas": 3,
+    "readyReplicas": 3,
+    "availableReplicas": 3
+  },
+  "generation": 3,
+  "constraints": [
+    {
+      "labelSelector": {
+        "matchLabels": {
+          "app.kubernetes.io/instance": "shop",
+          "app.kubernetes.io/name": "api"
+        }
+      },
+      "maxSkew": 1,
+      "topologyKey": "kubernetes.io/hostname",
+      "whenUnsatisfiable": "DoNotSchedule"
+    }
+  ],
+  "pods": [
+    {
+      "name": "shop-api-6c9cb4cbc4-7q7kr",
+      "node": "shop-lab4-control-plane",
+      "phase": "Running",
+      "deleting": false,
+      "ready": true,
+      "template_hash": "6c9cb4cbc4"
+    },
+    {
+      "name": "shop-api-6c9cb4cbc4-qmw57",
+      "node": "shop-lab4-worker",
+      "phase": "Running",
+      "deleting": false,
+      "ready": true,
+      "template_hash": "6c9cb4cbc4"
+    },
+    {
+      "name": "shop-api-6c9cb4cbc4-vx47q",
+      "node": "shop-lab4-control-plane",
+      "phase": "Running",
+      "deleting": false,
+      "ready": true,
+      "template_hash": "6c9cb4cbc4"
+    }
+  ],
+  "active_per_node": {
+    "shop-lab4-control-plane": 2,
+    "shop-lab4-worker": 1
+  }
+}

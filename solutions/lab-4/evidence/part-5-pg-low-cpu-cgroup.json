@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-10-29T23:58:43.448488+00:00",
+  "pod": "shop-postgres-1",
+  "uid": "74d92d7a-dcac-48ba-9cee-35b64a4b7bf6",
+  "cgroup": "/sys/fs/cgroup/kubelet.slice/kubelet-kubepods.slice/kubelet-kubepods-pod74d92d7a_dcac_48ba_9cee_35b64a4b7bf6.slice/cri-containerd-9386721f269ffcebe1127a61e0a85ce8b49143094d1524f6d015e6f584ce7d3a.scope/",
+  "files": {
+    "cpu.max": "3000 100000",
+    "cpu.stat": "usage_usec 35473307\nuser_usec 9199286\nsystem_usec 26274021\nnice_usec 0\nnr_periods 11784\nnr_throttled 11762\nthrottled_usec 5102401789\nnr_bursts 0\nburst_usec 0",
+    "memory.current": "104370176",
+    "memory.max": "104857600",
+    "memory.events": "low 0\nhigh 0\nmax 21\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0"
+  }
+}

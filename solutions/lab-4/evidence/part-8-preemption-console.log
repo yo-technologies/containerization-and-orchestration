@@ -1,0 +1,10 @@
+Baseline traffic: 20 seconds.
+Reserved CPU: 25 batch Ready, 15 Pending.
+Seven API Ready; 1 matched preemption events.
+Restoring normal replicas and chart defaults.
+{
+  "completed": true,
+  "events": 1,
+  "cleanup_errors": [],
+  "evidence": "/Users/semyondanshin/Programming/Uni/containerization-and-orchestration/solutions/lab-4/evidence/part-8-preemption.json"
+}
