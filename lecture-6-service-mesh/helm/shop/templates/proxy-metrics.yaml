@@ -1,0 +1,12 @@
+{{- if .Values.workloadsEnabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-waypoint-metrics
+  labels: {lab6-proxy: waypoint}
+spec:
+  type: NodePort
+  selector: {gateway.networking.k8s.io/gateway-name: {{ .Values.mesh.waypoint }}}
+  ports: [{name: metrics, port: 15090, targetPort: 15090, nodePort: 30090}]
+
+{{- end }}

@@ -1,0 +1,64 @@
+{
+  "uid": "itmo-shop-split",
+  "title": "ЛР6 — Проверка 90/10 через /version",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": [
+    "itmo",
+    "lab6"
+  ],
+  "timezone": "Europe/Moscow",
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "1000 независимых GET /version: распределение ответов",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by(version)(lab6_client_requests_total{phase=\"version-split\"})",
+          "legendFormat": "{{version}}",
+          "instant": true
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 10
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    }
+  ]
+}

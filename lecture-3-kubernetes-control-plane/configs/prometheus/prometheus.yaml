@@ -1,0 +1,54 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  namespace: observability
+spec:
+  replicas: 1
+  version: v3.15.0
+  image: quay.io/prometheus/prometheus:v3.15.0
+  serviceAccountName: lab2-prometheus
+  retention: 15d
+  scrapeInterval: 15s
+  evaluationInterval: 15s
+  serviceMonitorSelector:
+    matchLabels:
+      monitoring: lab2
+  serviceMonitorNamespaceSelector: {}
+  ruleSelector:
+    matchLabels:
+      monitoring: lab2
+  ruleNamespaceSelector: {}
+  podMetadata:
+    labels:
+      app.kubernetes.io/component: server
+  additionalScrapeConfigs:
+    name: lab2-additional-scrapes
+    key: scrapes.yaml
+  alerting:
+    alertmanagers:
+    - namespace: observability
+      name: prometheus-alertmanager
+      port: http
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: '1'
+      memory: 1Gi
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+    fsGroup: 65534
+  volumes:
+  - name: lab2-tsdb
+    persistentVolumeClaim:
+      claimName: prometheus-server
+  containers:
+  - name: prometheus
+    volumeMounts:
+    - name: lab2-tsdb
+      mountPath: /prometheus
+      subPath: ''

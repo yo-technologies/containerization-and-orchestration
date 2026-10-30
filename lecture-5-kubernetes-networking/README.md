@@ -1,104 +1,197 @@
-# Lecture 5 — Kubernetes networking
+# ЛР5. Сеть shop: поды исчезают, заказы остаются
 
-This lecture answers a question left open after the resources lecture: pods are constantly recreated and change their addresses — so how does anything keep working? From the earlier lectures we know that each container has its own network stack (net-namespace) with its own interfaces, IPs, and ports, and that pods are ephemeral: they are recreated on updates, moved to other nodes on failure, and get a new IP each time. Hence two problems: how pods on different servers see each other at all, and how to rely on an address that keeps changing. We work through it on a running example — the `shop` online store: an `api` service in three replicas across different nodes, a `worker`, and a `postgres` database. The store needs three things from the network: the three `api` replicas reachable by clients under one stable address; `api` and `worker` reliably finding `postgres` despite recreations; and only `api` and `worker` allowed to connect to `postgres`, not every pod in the cluster. We go bottom-up, in three blocks.
+Проверили, как магазин переживает пересоздание подов, закрыли лишние соединения и нашли специально внесённую сетевую поломку через Hubble. За 180 секунд клиент создал **840 заказов без ошибок**, пока удалялись поды апи и обработчиков заказов. После настройки политик и исправления поломки матрица доступа прошла **22/22** проверки.
 
-First, three basic words. An `IP address` is the numeric address of a machine or pod on the network (e.g. `10.1.2.3`); packets use it to find the recipient. A `port` is a "door" number at that address: many programs share one IP, each listening on its own port (`api` on `8080`, `postgres` on `5432`); the pair "IP plus port" points to one specific service. `NAT` (network address translation) is when someone rewrites the address in a packet along the way; it is a common source of "why does the recipient see a different address than I sent from" confusion, and one goal of the Kubernetes network model is to avoid NAT between pods.
+Работу выполнили 30 октября 2026 года. Использовали чарт из третьей лабы и мониторинг из второй; четвёртая не понадобилась.
 
----
+## 1. Что запустили и почему выбрали Cilium
 
-## Block 1. The network model and CNI
+| Где | Что работает |
+| --- | --- |
+| Двухузловой kind `shop-net` | 3 экземпляра апи, 2 обработчика заказов, PostgreSQL, клиент нагрузки и посторонний под |
+| В том же кластере | Cilium 1.20.4, Hubble, CoreDNS, kube-proxy и оператор CloudNativePG |
+| Прежний `observability` из ЛР2 | Prometheus, Grafana и Alertmanager |
 
-### The flat network: the core rule
+Выбрали Cilium, потому что он применяет NetworkPolicy и позволяет через Hubble увидеть, какое соединение заблокировано. Стандартный `kindnet` политики не применяет. При создании нового кластера отключили стандартный сетевой плагин, настройки сохранили в [configs/](configs/).
 
-All of Kubernetes networking rests on a surprisingly simple rule, called the flat network. First: every pod has its own unique IP address across the whole cluster, not per node. Second: any pod can reach any other pod directly by its IP, with no address translation, even if they are on different physical nodes. Third: a pod sees its own address exactly as others see it — no NAT. It is as if all pods were on one big shared network where anyone can call anyone. Important caveat: Kubernetes does not build this network itself — it only states the rule "it must be so"; a separate component, the network plugin, actually connects the pods.
+[Чарт `shop`](helm/shop/) расширили сетевыми политиками и шаблонами мониторинга. Релиз `shop` разворачивает приложение в новом кластере, а `lab5-networking` подключает его метрики к прежнему Prometheus через ServiceMonitor и EndpointSlice. Новые Prometheus и Grafana не устанавливали.
 
-### How a pod gets network on a node
+## 2. Как запустить
 
-A pod has its own net-namespace — an isolated network stack, empty at start. To connect it, a `veth` pair is created — a virtual patch cord with two ends. One end goes inside the pod, where it appears as `eth0`, the pod's network card. The other end stays on the node and plugs into a bridge — a virtual switch inside the node that all its pods connect to, just as a real switch connects office computers. The pod gets an IP from the range assigned to that node. So pods on one node see each other through the bridge.
+Нужны работающий Docker Desktop, kind, kubectl, Helm, Python с PyYAML и готовый стенд ЛР2/ЛР3 в контексте `kind-observability`. Команды выполняются из каталога этой лабы.
 
-### How pods on different nodes see each other
+Сначала развернули магазин без ограничений и проверили исходную сеть, затем включили политики:
 
-Each node is assigned its own non-overlapping address range for its pods (e.g. node A — `10.1.1.0/24`, node B — `10.1.2.0/24`). The slash notation is the range size: `/24` means 256 consecutive addresses. Since ranges do not overlap, a pod's address tells you which node it is on. To deliver a packet from node A to a pod on node B there are two main approaches. Routing: nodes know in advance which range lives on which node, and the packet goes straight over the ordinary network between servers, no repackaging — fast, but the inter-node network must allow it (example — Calico). Overlay: a pod's packet is wrapped whole inside an ordinary inter-node packet, like a letter in an envelope, sent to the right node and unwrapped there — works almost everywhere, but you pay small overhead for the wrap/unwrap (example — Flannel in VXLAN mode). Do not confuse the terms: a bridge (switch) connects pods within one node; a router passes traffic between networks, i.e. between nodes.
+```bash
+export DOCKER_CONTEXT=desktop-linux
+python3 scripts/setup.py --open
+python3 scripts/network.py
+python3 scripts/matrix.py --open --output matrix-open
+python3 scripts/setup.py
+```
 
-### CNI: who configures the pod's network
+[Установщик](scripts/setup.py) создаёт или переиспользует кластер, загружает образы и устанавливает чарт. Поды апи распределяются между обоими узлами. Для нового кластера используется отдельный `.state/kubeconfig`, прежний кластер не пересоздаётся.
 
-`CNI` (Container Network Interface) is the standard socket between Kubernetes and whatever actually configures the network. When `kubelet` on a node creates a pod, it calls the CNI plugin at the right moment, and the plugin does all the work: creates the `veth` pair, connects the pod to the network, assigns an IP from the node's range, and sets up routes to other nodes. So Kubernetes only states the rule "produce a flat network"; how to build it is decided by the chosen plugin — Calico, Cilium, Flannel, and others — which differ in exactly the inter-node delivery method and extra features. This is the same recurring pattern as `CRI` for runtimes (Lecture 1) and `CSI` for storage (the resources lecture): a standard interface with pluggable implementations.
+Интерфейсы открывали пробросом портов, каждый — в отдельном терминале:
 
-### IPAM: handing out addresses
+```bash
+kubectl --context kind-observability -n observability port-forward svc/grafana 13005:80 --address 127.0.0.1
+kubectl --context kind-observability -n observability port-forward svc/prometheus-server 19095:80 --address 127.0.0.1
+kubectl --kubeconfig .state/kubeconfig -n kube-system port-forward svc/hubble-ui 12005:80 --address 127.0.0.1
+```
 
-`IPAM` (IP Address Management) is the part of CNI's job that hands out addresses: which pod gets which IP and how to avoid two pods getting the same one. The mechanics are simple: each node has its own range; a pod is created — IPAM gives it a free address from the node's range; a pod is deleted — the address is freed and later reused by another pod. A direct consequence, which becomes Block 2's main problem: a pod's IP is temporary, alive only as long as the pod. You cannot rely on a specific pod IP — today it is `postgres`, tomorrow it is a different pod.
+После этого загрузили панели:
 
----
+```bash
+python3 scripts/dashboard.py
+```
 
-## Block 2. Service, load balancing, DNS
+| Интерфейс | Адрес |
+| --- | --- |
+| Магазин через NodePort | http://localhost:18085/orders |
+| Сетевая панель мониторинга | http://localhost:13005/d/itmo-shop-network |
+| График удаления подов | http://localhost:13005/d/itmo-shop-chaos |
+| Оповещения Prometheus | http://localhost:19095/alerts |
+| Карта Hubble | http://localhost:12005/?namespace=shop |
 
-### The problem: you cannot rely on a pod's IP
+## 3. Проверили сеть между узлами
 
-We want `api` to reach `postgres`, and clients to reach the three `api` replicas. What gets in the way: a pod's IP changes on every recreation; there are several replicas, each with its own IP; pods come and go during scaling and updates. We need a stable address that stands in front of a group of pods, never changes, and always knows the current list of live pods behind it. In Kubernetes that address is the `Service` object.
+До включения политик отправили прямой запрос между подами апи на разных узлах: `10.245.0.84` → `10.245.1.209:8080/health`. Получили `ok`, без участия Service и DNS.
 
-### Service: a stable address in front of pods
+Внутри первого пода нашли `eth0` с индексом 21 и вторым концом 22. На узле ему соответствовал `lxc741615eda608` с обратными индексами — 22 и 21. Так подтвердили конкретную veth-пару.
 
-A `Service` gives a group of pods one shared stable address — a `ClusterIP`. It is virtual: no specific machine sits behind it, it is just a permanent entry point that does not change for the service's lifetime. Which pods belong to the group is decided by labels: you put a label on the pods (e.g. `app=api`) and give the Service a `selector` — "my pods are the ones with this label" — and the Service automatically catches all matching pods. The beauty: a pod is recreated with a new IP — the Service updates its own list, while its own address, the `ClusterIP`, stays the same. The client always talks to the stable address and never knows the pods behind it come and go.
+```bash
+python3 scripts/network.py
+```
 
-### EndpointSlice: the current list of pods
+![IP подов на разных узлах, прямой запрос и пара veth](screenshots/08-pod-network.jpg)
 
-How does the Service know its live pods' real addresses at any moment? A separate object handles that — the `EndpointSlice`. A controller watches pods matching the `selector` and keeps in the EndpointSlice a current list — the IP and port of each live, ready pod. "Ready" is the key word: a pod enters the list not when it merely started but when it passed its readiness probe; as soon as a pod fails or is recreated, it is removed and traffic stops going to it. Keep two things apart: a `Service` is a stable address plus a label-based selection rule; an `EndpointSlice` is the continuously updated list of concrete addresses that this address maps to right now.
+При создании пода Cilium настраивает его сетевой интерфейс, а IPAM выделяет адрес из диапазона узла. В нашем стенде между узлами используется VXLAN. После пересоздания под получает новый IP, поэтому постоянные обращения приложения идут через имя Service.
 
-### kube-proxy: turning a ClusterIP into real pods
+## 4. Удаляли поды под нагрузкой
 
-A `ClusterIP` is virtual — literally nobody listens on it. So something must intercept traffic going to the ClusterIP and redirect it to the real IP of one of the live pods from the EndpointSlice. That is `kube-proxy`, a component on every node. The name is a bit misleading: "proxy" suggests it passes all traffic through itself, but usually it does not. In fact kube-proxy configures rules in the node's kernel, and then the kernel itself catches packets addressed to the ClusterIP on the fly and rewrites the destination to one of the pods. A "kernel rule" in plain words is an entry like "a packet going to this ClusterIP, send it to this real pod IP." kube-proxy constantly watches the EndpointSlice: the list changed — it immediately rewrites the rules so traffic only goes to current pods. The kernel moves the traffic, fast and with no extra hops. Since there are several pods, the kernel picks now one, now another — round-robin or random; that gives you load balancing for free. It is simple, not "smart": the kernel does not look at pod load, it just spreads evenly. Smart, request-level balancing is a job for Ingress or a mesh, in the next lecture.
+Апи опубликовали через `NodePort 30080`, который kind перенаправляет на `localhost:18085`. Внешний вход проверили отдельно. Непрерывный клиент внутри кластера обращался по DNS-имени `shop-api.shop.svc.cluster.local:8080` и создавал заказы через `POST /order`, без повторных попыток.
 
-### iptables vs IPVS
+```bash
+curl --fail http://127.0.0.1:18085/health
+python3 scripts/chaos.py --duration 180 --interval 10 --seed 530
+python3 scripts/collect.py chaos
+python3 scripts/dashboard.py
+```
 
-kube-proxy has two main modes — what it uses to write kernel rules. `iptables` is the classic Linux mechanism for filtering and rewriting packets: everywhere and reliable, but rules are checked as a list, one by one. With dozens of services it is unnoticeable; with thousands the list grows and the kernel walks a long chain per packet — this slows things down and updates slowly. `IPVS` (IP Virtual Server) is a kernel mechanism built for load balancing: it keeps services in a hash table, finds the right rule at once without scanning, and on large clusters is noticeably faster and more stable. On a small cluster you will not notice the difference and iptables is fine; on a large one (thousands of services) IPVS is markedly better.
+Скрипт выбирал случайный готовый под апи или обработчика заказов и удалял его штатной командой Kubernetes. Между итерациями выдерживал паузу 10 секунд; сами команды добавляли время.
 
-### DNS: finding a service by name
+| Результат за 180 секунд | Значение |
+| --- | --- |
+| Созданные заказы / завершённые запросы | 840 / 840 |
+| Ошибки HTTP или передачи данных | 0 |
+| Удалённые поды апи / обработчиков заказов | 6 / 6 |
+| Разные IP в последовательных снимках | 16, включая исходные |
 
-Even a stable `ClusterIP` is a number, awkward and fragile to hardcode. So every Service has a name, and the cluster runs its own DNS. DNS is the network's phone book: a service that turns a human-readable name into an IP address. In Kubernetes that role is played by `CoreDNS`. Thanks to it, `api` connects to the database just by the name `postgres`: it asks CoreDNS for `postgres`'s IP, gets the service's ClusterIP, and goes there — no hardcoded addresses. The full name looks like `service-name.namespace.svc.cluster.local`, but if `api` and `postgres` are in the same namespace, the short name `postgres` is enough. This solves the lecture's second task: `api` finds `postgres` by a stable name, whatever happens to the pods.
+![Заказы продолжаются, ошибки равны нулю, число удалений и наблюдённых IP растёт](screenshots/01-chaos.jpg)
 
-### Service types: outward and inward
+На графике последняя точка показывает 817 успешных запросов: периодический сбор метрик не совпадает с точной границей опыта. Полные **840/840** посчитаны по всем завершённым запросам за этот интервал.
 
-`ClusterIP` (the default) — the address is visible only inside the cluster, for service-to-service traffic (`api` → `postgres`). `NodePort` — opens the same port on every node, so from outside you can reach any node's address on that port; simple but crude. `LoadBalancer` — the production way to let traffic in from outside: Kubernetes asks the cloud for a real external load balancer that directs external traffic into the service; this is how `api` is usually published outward. `headless` (no ClusterIP) — DNS returns not one virtual address but the list of all the pods' IPs; needed when the client cares about individual pods rather than "any of the group." It almost always pairs with a `StatefulSet`: that gives pods stable names (`postgres-0`, `postgres-1`), and the headless service gives each its own stable DNS name so you can address a specific replica — e.g. write to the primary, read from a replica.
+| Компонент | За что отвечал |
+| --- | --- |
+| Deployment | Восстанавливал удалённые поды |
+| Service | Сохранял общий адрес апи |
+| EndpointSlice | Обновлял адреса и готовность обслуживающих подов |
+| kube-proxy | Обновлял правила направления соединений |
+| CoreDNS | Разрешал постоянное имя Service |
 
----
+В логах kube-proxy подтвердили режим `iptables`; замена kube-proxy средствами Cilium отключена. Разница между `iptables` и IPVS важнее при большом числе сервисов и частом изменении правил, чем на нашем небольшом стенде.
 
-## Block 3. Policies and eBPF
+```bash
+kubectl --kubeconfig .state/kubeconfig -n kube-system logs daemonset/kube-proxy --tail=40
+```
 
-### By default — everyone talks to everyone
+Ноль ошибок получен при штатном удалении: несколько реплик продолжали работать, а удаляемому поду давалось время завершить запросы. Принудительное уничтожение процесса в этот опыт не входило.
 
-From a security angle, the flat network from Block 1 means: by default any pod can reach any pod, no restrictions. Convenient for development, bad for security. Imagine an attacker finds a vulnerability in the public `api` and takes over the pod. Since the network is flat, from that pod they see everything in the cluster over the network — including reaching `postgres` directly to try to steal data. We would prefer that only `api` and `worker` could connect to `postgres`, with other pods blocked at the network level. That is exactly what network policies do.
+| Вариант Service | Чем отличается |
+| --- | --- |
+| NodePort | Открывает фиксированный порт на узлах |
+| LoadBalancer | Использует внешний балансировщик, который предоставляет облако или отдельный контроллер |
+| Сервис без виртуального IP | При `clusterIP: None` DNS возвращает адреса самих подов |
 
-### NetworkPolicy: who may talk to whom
+## 5. Ограничили доступ и проверили матрицу
 
-A `NetworkPolicy` is a rule object describing which pod may talk to which: by labels, ports, and traffic direction (ingress or egress). In words, the store's policy reads: "to pods labeled `app=postgres`, incoming connections are allowed only from pods labeled `app=api` and `app=worker`, and only on port `5432`; deny everything else." Then a compromised public pod without the right label simply cannot open a connection to the database. Two important subtleties. First: policies operate on labels, not IP addresses — sensibly so, since IPs change but labels are stable, and you describe rules in terms of pod roles. Second, the one everyone trips on: while no policy applies to a pod, it is open to everyone (the flat network); but as soon as a pod falls under even one policy, the principle "whatever is not explicitly allowed is denied" kicks in — everything the policy does not permit is blocked for that pod. So policies are usually added in pairs: first "deny all," then "allow what is needed."
+Сначала определили нужные направления:
 
-### Who actually enforces policies
+| Источник | Апи:8080 | Обработчик заказов:8080 | PostgreSQL:5432 | DNS, UDP/TCP 53 |
+| --- | --- | --- | --- | --- |
+| Клиент | Разрешено | Запрещено | Запрещено | Разрешено |
+| Апи | — | Запрещено | Разрешено | Разрешено |
+| Обработчик заказов | Запрещено | — | Разрешено | Разрешено |
+| Посторонний под | Запрещено | Запрещено | Запрещено | Разрешено |
+| PostgreSQL | Запрещено | Запрещено | — | Разрешено |
 
-A `NetworkPolicy`, like everything in Kubernetes, is only a description of the desired state in the API: you create the rule object and it is stored. By itself it blocks nothing — the rule must actually be enforced, written into the nodes' kernels, by the CNI plugin from Block 1. And here is the trap: not all plugins can enforce NetworkPolicy. Advanced ones like Calico and Cilium can; some simple ones, e.g. plain Flannel, cannot at all. With such a plugin you can create a policy, `kubectl` accepts it, it sits in the cluster — but it does nothing, silently, without a single error: you think you closed access to the database while it stays open. Conclusion: the very ability to restrict traffic depends on the chosen CNI, and this must be checked in advance.
+В [шаблонах политик](helm/shop/templates/networkpolicy.yaml) запретили входящий и исходящий трафик по умолчанию, затем открыли нужные соединения по меткам и портам. Параметры задаются через [values.yaml](helm/shop/values.yaml). Отдельно разрешили DNS, сбор метрик и служебные обращения оператора PostgreSQL и самой БД к апи Kubernetes. Общего выхода в Интернет не открывали.
 
-### Limits of the classic stack
+Проверки выполняли из сетевых пространств имён настоящих подов. DNS проверяли по UDP и TCP, прикладные направления — установлением TCP-соединения.
 
-The classic combination — iptables rules from kube-proxy plus policy rules — starts to hurt at scale. First: long rule chains cause latency and slow updates at thousands of services. Second: everything is described in terms of IPs and ports, though we think in terms of pods, services, and labels — a large gap between our model and what is in the kernel. Open the iptables rule list on a node and you get a wall of bare IP addresses and ports, not a single human name; to tell which rule is about which pod you must map addresses by hand. Hence the third pain: weak visibility — it is hard to tell who really talks to whom and why something does not connect. We want something that runs close to the kernel and is therefore fast, yet understands the Kubernetes context and gives visibility. That came with `eBPF`.
+```bash
+python3 scripts/matrix.py --output matrix-final
+```
 
-### eBPF in plain words
+![Все 22 проверки совпали с ожиданиями](screenshots/07-matrix-green.jpg)
 
-`eBPF` is a mechanism that lets you safely run small programs right inside the Linux kernel, without changing its source or loading modules. Previously, to change kernel behavior you had to either patch the kernel source or load a module — both risky, since a bug takes down the whole kernel. eBPF is different: the kernel verifies the program for safety before running it, so it cannot crash the kernel. Such programs hook onto events — a packet arrives, a syscall happens — and handle them on the spot, in the kernel, and therefore very fast. For networking this is a game changer: a decision about a packet (where to send it, whether to pass it) can be made right in the kernel, flexibly and with Kubernetes context, instead of walking long static chains. eBPF is not one tool but a platform on which new networking, observability, and security solutions are built.
+Получили **22/22**: апи и обработчики заказов видят PostgreSQL, посторонний под — нет. DNS продолжает работать. Пустая диагональ исключена из проверки: соединение внутри одного пода не показывает изоляцию между подами.
 
-### Cilium: networking on eBPF
+## 6. Нашли скрытую поломку через Hubble
 
-`Cilium` is a CNI plugin built on eBPF that brings together everything above. First, it can fully replace `kube-proxy`: it does service balancing via eBPF programs in the kernel instead of long iptables chains, and on a large cluster this is noticeably faster — the third path after iptables and IPVS. Second, network policies on eBPF, not only at the "port open or closed" level but at the application level. Here the term `L7` is useful: networks are split into layers, from the lowest (wires and signals) to the highest; the seventh, top layer L7 is the application layer, i.e. the request content (which HTTP method, which URL path, which headers). IPs and ports are low layers where you know "where to deliver" but not "what is inside." Working at L7 lets you decide based on the request itself — e.g. "this pod may only `GET /health`, everything else to this service is denied" — far finer than the crude "port open or closed." Third, observability: Cilium has a component, `Hubble`, that shows who really talks to whom, which connections pass, and which are blocked by policies — directly solving the blindness of the classic stack. Because of all this, Cilium has largely become the de facto standard for new clusters.
+Скрипт случайно выбирает одну из четырёх ошибок: неверный порт БД, неверные метки приложений, закрытый DNS или неверную метку клиента. Ошибка применяется через параметры чарта; выбранный вариант до диагностики не читали.
 
----
+```bash
+python3 scripts/fault.py inject
+```
 
-## Summary
+Заказы перестали проходить. В Hubble выбрали пространство имён `shop` и отклонённые соединения. Увидели, что апи и обработчики заказов не могут попасть в PostgreSQL на порт 5432: причина — **запрет политикой**, направление — входящее.
 
-- Flat network: every pod has its own unique IP, everyone sees everyone directly, no NAT.
-- Within a node pods are connected via `veth` pairs and a bridge; between nodes traffic is delivered by routing or overlay.
-- All of this is done by the CNI plugin — a standard socket with pluggable implementations, like `CRI` and `CSI`.
-- A pod's IP is temporary, so a stable layer is built on top: `Service` (`ClusterIP`) selects pods by labels, `EndpointSlice` keeps the list of live ready pods, `kube-proxy` configures kernel rules (`iptables`/`IPVS`), and the kernel balances.
-- `CoreDNS` lets services be found by name, so `api` reaches `postgres` by name, not address.
-- Service types for different needs: `ClusterIP`, `NodePort`, `LoadBalancer`, `headless`.
-- Traffic is restricted via `NetworkPolicy` (by labels, "whatever is not allowed is denied"), but the CNI enforces it, and not every one can — check.
-- The classic iptables stack slows and goes blind at scale; the industry's answer is `eBPF` and Cilium built on it: a fast data plane, fine-grained policies up to L7, and observability (`Hubble`).
+![Hubble: карта соединений и причина запрета при обращении к PostgreSQL](screenshots/03-hubble-policy-denied.jpg)
 
-> Lab: build a zero-trust network and prove it holds — see [lab.md](lab.md).
+После этого проверили правило входящего трафика БД:
+
+```bash
+kubectl --kubeconfig .state/kubeconfig -n shop get networkpolicy shop-database-ingress -o json
+```
+
+Порт оказался правильным, но правило ожидало метки `api-typo` и `worker-typo` вместо `api` и `worker`. Оно не выбирало нужные поды. Контрольная матрица дала **20/22**: не работали именно два разрешённых соединения с БД.
+
+Раскрыли вариант, вернули правильные метки и повторили проверку:
+
+```bash
+python3 scripts/fault.py reveal
+python3 scripts/fault.py fix
+python3 scripts/matrix.py --output matrix-final
+```
+
+Заказы снова начали создаваться, матрица вернулась к **22/22**. Запрет по умолчанию оставался включённым. Причину нашли по заблокированному соединению в Hubble, а не перебором всех настроек.
+
+## 7. Метрики и оповещения
+
+Метрики клиента и Hubble подключили к прежнему Prometheus из ЛР2. ServiceMonitor и PrometheusRule находятся в [чарте](helm/shop/templates/monitoring.yaml), панели Grafana — в [dashboards/](dashboards/). Метрики собираются каждые 5 секунд, правила проверяются каждые 15 секунд.
+
+На панелях видны успешные заказы, ошибки клиента, TCP-соединения, пакеты, отклонённые политикой, и состояние DNS. Во время поломки успешные заказы исчезли, ошибки и блокировки выросли, а DNS оставался доступен:
+
+![Метрики во время поломки](screenshots/04-network-fault.jpg)
+
+![TCP, DNS и сработавшие сетевые оповещения](screenshots/05-network-dns-alerts.jpg)
+
+| Оповещение | Условие, выдержка 30 секунд | Зачем нужно |
+| --- | --- | --- |
+| `ShopNetworkClientFailures` | Есть ошибки клиентских запросов за минуту | Показывает, что заказы не проходят с точки зрения клиента |
+| `ShopNetworkPolicyDrops` | Более 0,1 отклонённого политикой пакета в секунду | Помогает заметить устойчивую блокировку и перейти к её разбору в Hubble |
+| `ShopNetworkDNSFailures` | Есть ошибки DNS за минуту либо исчез его наблюдатель | Выделяет проблему разрешения имён или отказ проверки DNS |
+
+Первые два оповещения **сработали**. Третье осталось неактивным: ошибка была в доступе к БД, а не в DNS.
+
+![Два сработавших правила в Prometheus ЛР2](screenshots/06-prometheus-alerts-firing.jpg)
+
+После исправления новые ошибки прекратились. Когда старые события вышли из минутного окна, оповещения снялись.
+
+## Итог
+
+Магазин пережил 12 удалений подов без ошибок в 840 запросах. Политики закрыли лишние соединения, сохранив нужные маршруты и DNS. Скрытую поломку нашли через Hubble и исправили, после чего снова получили **22/22**.
+
+Чарт и скрипты проверены, повторный запуск установщика прошёл. Прежний мониторинг и его хранилища сохранились. Результат относится к штатному удалению подов в локальном стенде; отказ физического компьютера здесь не проверяли.

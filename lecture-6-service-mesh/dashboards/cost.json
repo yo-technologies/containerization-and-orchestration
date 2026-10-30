@@ -1,0 +1,206 @@
+{
+  "uid": "itmo-shop-cost",
+  "title": "ЛР6 — Baseline и цена mesh",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": [
+    "itmo",
+    "lab6"
+  ],
+  "timezone": "Europe/Moscow",
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "p50 заказа: 2000 запросов, concurrency=4",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab6_benchmark{measurement=\"p50_ms\"}",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Зафиксированные измерения scripts/benchmark.py: kubelet stats/summary и внутрикластерный клиент. Исходные данные в evidence/."
+    },
+    {
+      "id": 2,
+      "title": "p95 заказа: 2000 запросов, concurrency=4",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab6_benchmark{measurement=\"p95_ms\"}",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Зафиксированные измерения scripts/benchmark.py: kubelet stats/summary и внутрикластерный клиент. Исходные данные в evidence/."
+    },
+    {
+      "id": 3,
+      "title": "CPU API + data plane при 20 заказах/с, millicores",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab6_benchmark{measurement=\"total_cpu_millicores\"}",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Зафиксированные измерения scripts/benchmark.py: kubelet stats/summary и внутрикластерный клиент. Исходные данные в evidence/."
+    },
+    {
+      "id": 4,
+      "title": "Память API + data plane, MiB",
+      "type": "bargauge",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab6_benchmark{measurement=\"total_memory_mib\"}",
+          "legendFormat": "{{stage}}",
+          "instant": true
+        }
+      ],
+      "gridPos": {
+        "x": 12,
+        "y": 7,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      },
+      "description": "Зафиксированные измерения scripts/benchmark.py: kubelet stats/summary и внутрикластерный клиент. Исходные данные в evidence/."
+    }
+  ]
+}

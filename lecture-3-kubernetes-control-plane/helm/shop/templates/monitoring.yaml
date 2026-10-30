@@ -1,0 +1,56 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "shop.labels" . | nindent 4 }}
+    monitoring: lab2
+spec:
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/part-of: shop
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "shop.labels" . | nindent 4 }}
+    monitoring: lab2
+spec:
+  groups:
+    - name: shop
+      rules:
+        - alert: ShopAPIUnavailable
+          expr: sum(up{namespace="{{ .Release.Namespace }}",service="{{ .Release.Name }}-api"}) == 0 or absent(up{namespace="{{ .Release.Namespace }}",service="{{ .Release.Name }}-api"})
+          for: 1m
+          labels:
+            severity: critical
+            service: shop
+          annotations:
+            summary: "Shop: no API scrape targets available"
+        - alert: ShopDatabaseUnavailable
+          expr: max(shop_database_up{namespace="{{ .Release.Namespace }}",service="{{ .Release.Name }}-worker"}) == 0 or absent(shop_database_up{namespace="{{ .Release.Namespace }}",service="{{ .Release.Name }}-worker"})
+          for: 1m
+          labels:
+            severity: critical
+            service: shop
+          annotations:
+            summary: "Shop: workers cannot observe a working database"
+        - alert: ShopOrderBacklog
+          expr: max(shop_pending_orders{namespace="{{ .Release.Namespace }}"}) > 10
+          for: 1m
+          labels:
+            severity: warning
+            service: shop
+          annotations:
+            summary: "Shop: more than ten orders await processing"
+{{- end }}

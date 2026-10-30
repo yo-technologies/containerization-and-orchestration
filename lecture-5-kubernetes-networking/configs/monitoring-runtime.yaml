@@ -1,0 +1,14 @@
+workloads:
+  enabled: false
+monitoring:
+  enabled: true
+  remoteTargets:
+  - name: hubble
+    port: 9965
+    addresses:
+    - 172.22.0.3
+    - 172.22.0.4
+  - name: client
+    port: 30910
+    addresses:
+    - 172.22.0.3

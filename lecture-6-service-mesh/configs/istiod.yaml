@@ -1,0 +1,12 @@
+profile: ambient
+pilot:
+  resources:
+    requests: {cpu: 100m, memory: 128Mi}
+    limits: {cpu: "1", memory: 512Mi}
+meshConfig:
+  accessLogFile: /dev/stdout
+  defaultConfig:
+    proxyStatsMatcher:
+      inclusionRegexps:
+        - ".*upstream_rq_retry.*"
+        - ".*outlier_detection.*"

@@ -1,0 +1,6 @@
+api:
+  v2Enabled: false
+mesh:
+  enabled: false
+traffic:
+  v2Weight: 0

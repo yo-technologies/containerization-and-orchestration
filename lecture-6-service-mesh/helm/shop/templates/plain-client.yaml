@@ -1,0 +1,19 @@
+{{- if .Values.workloadsEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: shop-plain}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: shop-plain}}
+  template:
+    metadata:
+      labels: {app: shop-plain}
+    spec:
+      containers:
+        - name: client
+          image: {{ .Values.client.image }}
+          command: [python3, -c, "import time; time.sleep(1000000)"]
+          resources:
+            requests: {cpu: 5m, memory: 16Mi}
+            limits: {cpu: 100m, memory: 64Mi}
+{{- end }}

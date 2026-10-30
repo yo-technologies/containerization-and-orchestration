@@ -1,0 +1,136 @@
+{
+  "uid": "itmo-shop-chaos",
+  "title": "ЛР5 — Клиент пережил pod chaos",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": [
+    "itmo",
+    "lab5"
+  ],
+  "timezone": "Europe/Moscow",
+  "refresh": "5s",
+  "time": {
+    "from": "2026-10-29T22:10:20.795Z",
+    "to": "2026-10-29T22:13:20.806Z"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Непрерывное удаление Pod: заказы, ошибки и новые IP",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(shop_client_requests_total{result=\"success\"} - shop_client_requests_total{result=\"success\"} @ 1793311820)",
+          "legendFormat": "Успешные заказы"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(shop_client_requests_total{result=\"failure\"} - shop_client_requests_total{result=\"failure\"} @ 1793311820)",
+          "legendFormat": "Ошибки клиента"
+        },
+        {
+          "refId": "C",
+          "expr": "shop_chaos_deletions_total",
+          "legendFormat": "Удалённые Pod"
+        },
+        {
+          "refId": "D",
+          "expr": "shop_chaos_unique_pod_ips",
+          "legendFormat": "Уникальные IP Pod"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 14
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Удалённые Pod"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Уникальные IP Pod"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ошибки клиента"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    }
+  ]
+}

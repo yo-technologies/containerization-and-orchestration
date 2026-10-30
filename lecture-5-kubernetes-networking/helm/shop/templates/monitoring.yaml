@@ -1,0 +1,73 @@
+{{- if .Values.monitoring.enabled }}
+{{- range .Values.monitoring.remoteTargets }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ .name }}
+  labels:
+    networking-lab: shop
+    target: {{ .name }}
+spec:
+  ports:
+    - {name: metrics, port: {{ .port }}, targetPort: {{ .port }}}
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: {{ $.Release.Name }}-{{ .name }}
+  labels:
+    kubernetes.io/service-name: {{ $.Release.Name }}-{{ .name }}
+    endpointslice.kubernetes.io/managed-by: lab5-helm
+addressType: IPv4
+ports:
+  - {name: metrics, port: {{ .port }}, protocol: TCP}
+endpoints:
+  {{- range .addresses }}
+  - addresses: [{{ . | quote }}]
+    conditions: {ready: true}
+  {{- end }}
+{{- end }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-networking
+  labels: {monitoring: lab2}
+spec:
+  selector:
+    matchLabels: {networking-lab: shop}
+  namespaceSelector:
+    matchNames: [{{ .Release.Namespace | quote }}]
+  serviceDiscoveryRole: EndpointSlice
+  endpoints:
+    - {port: metrics, path: /metrics, interval: 5s}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ .Release.Name }}-networking
+  labels: {monitoring: lab2}
+spec:
+  groups:
+    - name: shop-networking
+      rules:
+        - alert: ShopNetworkClientFailures
+          expr: sum(increase(shop_client_requests_total{result="failure"}[1m])) > 0
+          for: 30s
+          labels: {severity: critical, service: shop-networking}
+          annotations:
+            summary: "Shop: the independent client cannot create orders"
+        - alert: ShopNetworkPolicyDrops
+          expr: sum(rate(hubble_drop_total{source="shop",reason="POLICY_DENIED"}[1m])) > 0.1
+          for: 30s
+          labels: {severity: warning, service: shop-networking}
+          annotations:
+            summary: "Shop: sustained traffic denied by network policy"
+        - alert: ShopNetworkDNSFailures
+          expr: sum(increase(shop_client_dns_queries_total{result="failure"}[1m])) > 0 or absent(shop_client_dns_queries_total{result="success"})
+          for: 30s
+          labels: {severity: critical, service: shop-networking}
+          annotations:
+            summary: "Shop: client DNS lookups fail or the DNS observer is missing"
+{{- end }}
