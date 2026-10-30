@@ -1,85 +1,180 @@
-# Lecture 6 — Service mesh and advanced traffic
+# ЛР6. Релиз, который сам решает, когда ему пора назад
 
-This lecture answers one question: how do you get encryption, reliability, fine-grained traffic control, and deep visibility between services — without rewriting the code of every service? The networking lecture gave us two things from the Kubernetes network: connectivity (pods find each other via `Service` and DNS) and coarse "who talks to whom" rules via `NetworkPolicy`, at the level of labels and ports. As a system grows, that stops being enough. We use one running example throughout — an online shop `shop` with services `api` (×3), `worker`, and `postgres` — and look at what a service mesh adds between them, how it works inside, what it really gives you, and what it costs.
+Добавили к `shop` сервисную сеть Istio ambient и настроили постепенный релиз. Плохая v2 автоматически теряет трафик, здоровая забирает его целиком. Проверили шифрование, повторные запросы и посчитали расход ресурсов.
 
----
+Лабораторную выполнили 30 октября 2026 года в локальном kind. Снимки сделали в работающей Grafana, время на графиках — московское. Команды приведены текстом.
 
-## Block 1. Why mesh: data plane, control plane, and sidecar
+## 1. Что запустили и почему выбрали Istio ambient
 
-### What the plain network lacks
+Взяли [апи на Go](api/main.go) и [пакет Helm `shop`](helm/shop/) из ЛР3. Развернули отдельный одноузловой кластер `shop-mesh`, пространство имён `mesh-shop`. Prometheus и Grafana переиспользовали из ЛР2. У каждой версии апи по одной реплике; PostgreSQL оставили вне сервисной сети.
 
-The network from last lecture gives connectivity and coarse access rules. As the system grows, you want four more things. First, encryption between services: inside the cluster everything travels in plaintext by default. Second, request-level reliability: automatic retries on failure, timeouts, and protection against cascading failures, where one failing service drags down the whole chain that depends on it. Third, fine-grained routing: send 5% of traffic to a new version of `api` and check nothing broke (a canary rollout). Fourth, deep visibility: not "a packet went through," but "which request, to which service, how long it took, with what response code." And ideally all of this without touching each service's code.
+Выбрали **Istio ambient 1.30.7**: один `ztunnel` обеспечивает защищённый транспорт на узле, а общий прокси waypoint добавляет HTTP-маршрутизацию, повторные запросы и метрики. Отдельных контейнеров-посредников рядом с каждым апи нет.
 
-### The pain without mesh: the same thing in every service
+| Возможность апи | Для чего нужна |
+| --- | --- |
+| `GET /health`, `GET /version` | Проверка доступности и версии |
+| `POST /order`, `GET /orders` | Создание и чтение заказов из PostgreSQL |
+| `GET /metrics` | Метрики приложения |
+| `FLAKY=true` на v1 | Примерно 30% обращений завершаются HTTP 500 |
+| `FAIL=true` на v2 | Все попытки создать заказ завершаются HTTP 500 |
 
-Without a mesh, all of this lives in each service's code, usually via libraries: one library for retries, one for timeouts, one for metrics, one for encryption. At scale this brings four problems. Duplication — the same infrastructure logic written again and again. Inconsistency — services in different languages (`Go`, `Python`, `Java`), each with its own library, behavior, and bugs; uniformity is nearly impossible. Expensive change — to update, say, the retry policy company-wide you must rebuild and redeploy every service, because the logic is baked into each one. And developers spend time on infrastructure instead of business logic. The natural idea: lift all traffic work out of the code into a separate layer. That is the mesh.
+Искусственные ошибки возникают **до записи в базу**, поэтому их повтор не создаёт дубликаты заказов. Само апи и [клиент нагрузки](tools/client.py) повторных запросов не делают.
 
-### L4 and L7: which level we work at
+## 2. Как развернули стенд
 
-To talk about mesh you need two network levels. `L4` (transport) is the level of addresses, ports, and connections: "deliver the packet to IP:port, open a TCP connection." It knows nothing about the request's contents. All the networking from last lecture — `Service`, `kube-proxy`, load balancing — lives at `L4`. `L7` (application) is the level of the request itself: HTTP method, URL (e.g. `/api/orders`), headers, response code (`200`/`500`). Here the request has meaning. The key to the whole lecture: the Kubernetes network works at `L4`, the mesh works at `L7`. That is why the mesh can do what the network fundamentally cannot — retry a failed request, route by URL, count response codes — all of which require understanding the request, not just the address.
+Для повторения нужны Docker Desktop, kind, kubectl, Helm, Python 3 и работающий набор сервисов ЛР2 в контексте `kind-observability`.
 
-### The idea of mesh: move traffic into a proxy layer
+```bash
+export DOCKER_CONTEXT=desktop-linux
+python3 scripts/setup.py
+python3 scripts/forward.py
+```
 
-A service mesh is an infrastructure layer that takes over all inter-service communication at `L7`: encryption, retries, timeouts, routing, metrics. The core trick: next to each service you place a proxy, and all of that service's traffic — inbound and outbound — goes through it. The service itself talks as usual; it doesn't even know about the proxy. It just sends a request, and the proxy intercepts it and does the smart work: encrypts, retries on failure, measures latency, routes it. The service code never changes. This web of proxies around all services is the service mesh.
+Первый запуск разворачивает исходную версию без сервисной сети. Доступ к новому кластеру хранится в `.state/kubeconfig`. Проброс портов открывает Grafana на `http://127.0.0.1:23000`, Prometheus — на `http://127.0.0.1:29090`, управление клиентом — на `http://127.0.0.1:29100`.
 
-### Sidecar and Envoy
+## 3. Исходные замеры без сервисной сети
 
-The classic way to place a proxy next to a service is the sidecar: an extra container in the same pod as the main service (we covered sidecars in the control-plane lecture). Now the pod has two containers: your service and the proxy. All of the pod's network traffic is redirected through the proxy, and the interception happens automatically via kernel rules — `iptables` or `eBPF`. `iptables` is a Linux kernel mechanism for defining what to do with network packets; the mesh uses such rules to funnel all pod traffic into its proxy, so the service reconfigures nothing. The sidecar is also injected automatically: the mesh uses the mutating webhook from lecture 2 — you create an ordinary pod with your service, and the webhook mixes in the proxy container on the way in. You add nothing by hand. The proxy is almost always `Envoy` — a fast proxy built for `L7`. It's called programmable: an ordinary proxy takes its rules from a config file and must restart to change them, while `Envoy` can receive new rules over the network on the fly, without restarting. That's why the control plane can change routing and policy for thousands of proxies while they run.
+```bash
+python3 scripts/benchmark.py baseline
+```
 
-### Data plane and control plane
+Для ресурсов держали 20 заказов/с: после 20 секунд прогрева собирали данные kubelet в течение минуты. Отдельно измерили задержки на 2000 заказах с четырьмя одновременными запросами. Клиент находился внутри кластера; проброс порта не входил в измеряемый путь заказа.
 
-A mesh has two layers — the same separation idea as in the control-plane lecture. The data plane is all the proxies (`Envoy`) next to the services; they actually carry the traffic, encrypt it, retry requests, count metrics. There are many of them — one per pod. The control plane is the mesh's brain; in the popular `Istio` it's called `istiod`. It's a single central component that hands each proxy its configuration, issues certificates for encryption, and tracks which services and pods exist. It all works in the familiar declarative style: you describe a rule (e.g. "retry failed requests to `api` up to three times") as an ordinary Kubernetes object, the control plane turns it into concrete settings and distributes it to the right proxies, and the proxies execute. Hold onto this split: the data plane carries, the control plane configures.
+| Показатель | Без сервисной сети |
+| --- | ---: |
+| Успешные заказы | 2000 из 2000 |
+| p50 / p95 | 1,84 / 78,85 мс |
+| Загрузка процессора апи | 24,35 миллиядра |
+| Память апи | 8,33 МиБ |
 
-## Block 2. What mesh gives: mTLS, traffic, observability
+Инфраструктура Istio уже была установлена, но апи и клиент ещё не были подключены к сервисной сети: прокси в пути заказа не участвовали.
 
-### What TLS and mTLS are
+## 4. mTLS: соединение действительно зашифровано
 
-`TLS` is connection encryption — the padlock in the browser and the s in `https`. It gives two things: the contents can't be read in transit, and the client is sure it's talking to the real server, not an impostor. Plain `TLS` verifies only the server. `mTLS` (mutual TLS) is the same, but both sides are verified: the client is sure of the server, and the server knows exactly who came to it. In a mesh: the control plane issues each service a certificate. A certificate is a cryptographic proof of identity, like a passport: it says "I am service `api`" and is signed by a trust authority shared across the cluster (the mesh control plane). The pair "who I am plus the authority's signature" is the identity — a cryptographic identity; here certificate and identity are essentially the same thing. It can't be forged: to impersonate `api` you'd need a certificate signed by the trust authority, and forging that signature without the authority's secret key is mathematically impossible. The rest is simple: on connecting, proxies show each other their certificates and verify the authority's signature, so each is sure who it's really talking to, and encrypt all traffic over `mTLS` automatically.
+Подключение к сервисной сети, выбор waypoint и политика `STRICT` заданы в пакете Helm.
 
-### Why mTLS is valued
+```bash
+helm --kubeconfig .state/kubeconfig upgrade shop helm/shop -n mesh-shop \
+  --reuse-values --set mesh.enabled=true --set api.v2Enabled=false \
+  --set traffic.v2Weight=0 --wait
+kubectl --kubeconfig .state/kubeconfig -n mesh-shop \
+  rollout status deployment/shop-waypoint
+```
 
-First: all traffic between services is encrypted, even inside the cluster. Recall the risk from last lecture — an attacker takes over one pod and sniffs the network; with `mTLS` they see only an encrypted stream. Second: services authenticate each other by cryptographic identity, not by IP address. This matters because pod IPs change and can be spoofed, while identity cannot. The policy "only `api` may reach `postgres`" becomes genuinely reliable: not "from such-and-such IP" but "whoever cryptographically proved they are `api`." Third: all of it happens without a single line in the service code and without manual certificate handling — the control plane issues, distributes, and renews them itself. Manual certificate management is a well-known pain, and the mesh removes it. `mTLS` is, honestly, the most common reason people adopt a mesh.
+Запрос из одного Pod апи к другому прошёл с HTTP 200. При отдельной проверке установили TLS 1.3 с шифром `TLS_AES_256_GCM_SHA384` и проверили подпись сертификата по удостоверяющему центру Istio. В сертификате указана учётная запись `spiffe://cluster.local/ns/mesh-shop/sa/shop-api`.
 
-### Traffic management: canaries and more
+Обычный HTTP к апи был отклонён. TLS-соединение без клиентского сертификата тоже не прошло: сервер потребовал сертификат. Значит, проверили и шифрование, и взаимную аутентификацию, а не только наличие метки подключения.
 
-Because the proxy understands `L7` and sits in the path of every request, it can manage traffic intelligently. The most common use is traffic splitting for a canary rollout: you say "send 95% of requests to `api` v1 and 5% to v2," watch the new version's metrics and errors, and if all is well, gradually raise its share to 100%. If not, you instantly roll back by switching the share, with no rebuild or redeploy. Next, routing by request attributes: by header or URL path, send, say, beta users to the new version and everyone else to the stable one. And mirroring: send a copy of real traffic to the new version idly, without returning its responses to clients, to check how it holds real load with no risk. All of this is set by declarative rules and changes on the fly, without rebuilding services.
+![Проверка шифрования, сертификата и отказа без клиентского сертификата](screenshots/mtls-proof.jpg)
 
-### Reliability: retries, timeouts, circuit breaking
+Учётная запись принадлежит ServiceAccount `shop-api`, а не IP-адресу Pod. v1 и v2 используют одну учётную запись сервиса; версии различаются метками. Соединение апи → PostgreSQL в эту проверку не входит.
 
-The proxy in each request's path can add several safety mechanisms — again with no code. Retries: if a request fails once (a network blip, a pod being recreated), the proxy quietly retries it and the client notices nothing. Timeouts: don't wait forever on a stuck service; cut it off after a set time and return an error fast, so a queue of waiters doesn't pile up. And circuit breaking: if a service consistently returns errors or doesn't respond, the proxy temporarily stops sending it requests altogether. Why: to give the sick service breathing room to recover, and to prevent a cascading failure — where one downed service drags along everyone waiting on it and the whole system falls in a chain. The breaker cuts that chain. All three are set by rules and work the same for services in any language.
+## 5. Серверная часть ошибается, клиент почти не замечает
 
-### Observability almost for free
+Включили `FLAKY=true` на v1 и направили на неё весь трафик. В HTTPRoute разрешили до трёх повторов HTTP 500 сверх исходной попытки. Начальная задержка между попытками — 10 мс, общее ограничение времени — 3 секунды, одной попытки — 1 секунда.
 
-Since all inter-service traffic already passes through the proxy, the mesh sees every request and gives observability with no code changes. Metrics per pair of services: how many requests go from `api` to `postgres`, what latencies, what error rate — the so-called golden signals (covered in the observability lecture). Traces: the path of a single request through the whole chain and where exactly it slows down — invaluable when "something is slow somewhere." And a service map: a visual diagram of who calls whom, highlighting where it's red; provided by tools like `Kiali` and `Jaeger` on top of the mesh. Observability is a big topic — it's covered in its own, earlier lecture — but the mesh hands you a large part of it for free, simply because all traffic flows through it.
+```bash
+python3 scripts/scenario.py reliability
+```
 
-## Block 3. Cost and evolution: from sidecar to ambient and eBPF
+![Ошибки серверной части, клиента и повторные запросы Envoy на одном графике](screenshots/reliability.jpg)
 
-### The cost of the sidecar model
+На последней точке графика серверная часть возвращает **28,5% ошибок**, а клиент видит только **0,615%**. Синяя линия около 40% означает примерно 40 дополнительных попыток на 100 клиентских заказов.
 
-Nothing is free — the convenience of the sidecar is paid for on several fronts. Resources: a proxy container next to every service eats memory and CPU; at a thousand pods that's a thousand proxies and a noticeable total cost. Latency: a request from `api` to `postgres` used to go directly; now it exits through the `api` proxy and enters through the `postgres` proxy — two extra hops per request, each adding a little to response time; usually a little, but noticed on latency-critical paths. Operational complexity: the proxy is another component to update and debug, and upgrading the mesh itself usually means restarting all pods. And the "magic": traffic is intercepted invisibly to the app, so when something goes wrong, an engineer without mesh knowledge struggles to see where their request went. These costs are exactly what drove the next evolution.
+Причину подтвердили метриками Envoy: `envoy_cluster_upstream_rq_retry` достиг 987, а `envoy_cluster_upstream_rq_retry_success` — 710. Размыкание цепи и исключение сбойных экземпляров не настраивали — помогли именно **повторные запросы**. При независимых 30% ошибок вероятность провала всех четырёх попыток равна примерно `0,3⁴ = 0,81%`, что согласуется с наблюдениями.
 
-### Ambient / sidecarless
+## 6. Две версии и распределение 90/10
 
-The answer to the sidecar's cost is a new generation of mesh called ambient or sidecarless; in `Istio` it's ambient mode. The idea: stop stuffing a proxy into every pod, and split functions into two layers. The base layer — `mTLS` and `L4` work — moves into one proxy per node, called `ztunnel`, serving all pods on that node at once; instead of a thousand proxies you now have one per node, overhead drops sharply, and encryption between services is nearly free. The complex `L7` logic (routing, canaries, retries) is enabled not everywhere but only for the services that actually need it, via a separate proxy called a `waypoint`. The point: you pay only for what you actually use. Plus a big operational win — enabling this mesh needs no restart of all pods and no sidecar injection.
+Развернули v1 и здоровую v2 одновременно. HTTPRoute из пакета Helm направляет 90% трафика в `shop-api-v1`, 10% — в `shop-api-v2`.
 
-### eBPF in mesh
+```bash
+python3 scripts/scenario.py split
+curl -sS -X POST http://127.0.0.1:29100/control \
+  -H 'Content-Type: application/json' -d '{"active":false}'
+curl -sS -X POST http://127.0.0.1:29100/versions \
+  -H 'Content-Type: application/json' -d '{"count":1000}'
+```
 
-The second direction is `eBPF`, from last lecture: it lets you safely run programs directly in the kernel. Why "in the kernel" is cheaper: ordinary programs, including the `Envoy` proxy, run in user space — the ordinary, unprivileged mode, separate from the kernel. For a packet to pass through such a proxy, the kernel hands it up to user space, the proxy processes it, and the packet returns to the kernel — that round trip costs time, on every packet. `eBPF` runs its code inside the kernel itself, without that trip up and down. For a mesh: part of the work — traffic interception, simple `L4` processing — can be done by `eBPF` programs in the kernel instead of routing every packet through a user-space proxy; fewer hops, less overhead. `Cilium` (our CNI from last lecture) builds its mesh on `eBPF`, merging network and mesh into one layer. The overall trend: fewer separate sidecars, closer to the kernel, pay only for what you need.
+Из 1000 запросов `/version` получили **891 ответ v1 и 109 ответов v2** — 89,1% и 10,9%. Это близко к заданным весам: выбор версии случайный, ровно каждый десятый запрос не гарантируется.
 
-### When mesh is NOT needed
+![Распределение ответов двух версий](screenshots/traffic-split-90-10.jpg)
 
-A mesh is powerful, but also a large, complex component you must understand, update, and be able to fix. Very often it's overkill. You're fine without a mesh if: there are few services and call chains are short; encryption is needed mainly at the edge and `Ingress` with `TLS` covers it while internal traffic isn't yet critical; reliability and metrics from a couple of libraries satisfy you; or the team simply isn't ready to operate another complex layer — a misconfigured mesh can cause more problems than it solves. The rule: adopt a mesh not because it's trendy, but when a concrete pain (`mTLS` everywhere, canary rollouts, visibility at the scale of dozens to hundreds of services) really outweighs its complexity.
+## 7. Автопилот релиза
 
-### How to decide whether you need a mesh
+[Скрипт проверки](gate/gate.py) раз в 15 секунд читает из Prometheus долю ошибок v2, p95 и число запросов за последние 30 секунд. Долю трафика меняет через Helm, без прямого редактирования HTTPRoute. Для скрипта также подготовили [Dockerfile](gate/Dockerfile).
 
-A practical guide. Three to five services, essentially a monolith with a couple of satellites — you almost certainly don't need a mesh; the overhead and complexity won't pay off. Dozens of services in different languages, `mTLS`/audit requirements, frequent rollouts you want to watch — a mesh is justified. If you essentially need only `mTLS` and not the heavy `L7` logic, look at ambient or `eBPF` first, which give it cheaply, before pulling in a classic sidecar mesh with its full cost. And the general adoption principle — start small: you don't have to enable a mesh everywhere at once; roll it out gradually, one namespace at a time, on non-critical services, and expand as the team gets comfortable.
+Правила такие:
 
-## Summary
+- После изменения веса ждём 40 секунд и не менее 20 запросов к v2.
+- Если ошибок больше 5% или p95 выше 250 мс, откатываем вес v2 в 0.
+- После двух успешных проверок повышаем долю: **10 → 25 → 50 → 100%**. На каждой ступени начинаем наблюдение заново.
+- Достигнув 100%, ещё раз проверяем результат. При трёх подряд ошибках получения метрик или превышении общего времени 10 минут тоже откатываемся.
 
-- The mesh moves inter-service traffic work (`L7`) out of service code into a separate proxy layer; the Kubernetes network works at `L4`, the mesh at `L7`, so it understands the request itself.
-- Architecture: a sidecar proxy (`Envoy`) next to each service is the data plane; the central `istiod` is the control plane; the proxy is injected automatically via a mutating webhook, and traffic is intercepted via `iptables`/`eBPF`.
-- It gives four things: `mTLS` (encryption + mutual authentication by identity, no code and no manual certificates); traffic management (canaries, routing, mirroring); reliability (retries, timeouts, circuit breaking); observability (metrics, traces, service map) almost for free.
-- Cost: resources, latency, operational complexity, and interception "magic" → hence the evolution toward ambient/sidecarless (`ztunnel` + `waypoint`) and `eBPF` (`Cilium`).
-- Adopt a mesh deliberately — when a concrete pain outweighs its complexity — and roll it out gradually.
+Для этих опытов повторные запросы отключили, чтобы они не маскировали ошибки новой версии.
 
-> Lab: build an autonomous, safe release and measure its cost — see [lab.md](lab.md).
+### Плохой релиз
+
+```bash
+python3 scripts/scenario.py bad
+```
+
+Развернули v2 с `FAIL=true`. Автопилот увидел **100% ошибок** и примерно через **46 секунд** сам снизил её вес с 10% до 0. Вручную трафик не переключали.
+
+![Автоматический откат плохой v2](screenshots/bad-release-rollback.jpg)
+
+Фактическая доля v2 уходит в ноль с задержкой 30-секундного окна. После отката новых запросов к ней нет, поэтому её доля ошибок перестаёт вычисляться.
+
+### Здоровый релиз
+
+```bash
+python3 scripts/scenario.py good
+```
+
+С `FAIL=false` автопилот прошёл все ступени и подтвердил **100% трафика на v2** примерно за **244 секунды**. В последнем контрольном окне ошибок не было, p95 составил **5,18 мс**. Дополнительные 200 запросов `/version` тоже все пришли от v2.
+
+![Автоматическое продвижение здоровой v2](screenshots/good-release-promotion.jpg)
+
+На старте опыта были три ответа HTTP 504 от шлюза без версии назначения. Первые точки графика также захватывают старые ошибки предыдущего релиза: поэтому автопилот ждёт прогрева и не принимает решение сразу после развёртывания.
+
+## 8. Сколько стоит сервисная сеть
+
+Повторили тот же замер на одной здоровой v1, без повторных запросов и параллельной v2:
+
+```bash
+python3 scripts/benchmark.py with-mesh
+```
+
+Оба запуска завершились 2000 успешными заказами. Ресурсы измеряли при одинаковой нагрузке 20 заказов/с.
+
+| Показатель | Без сервисной сети | С сервисной сетью | Разница |
+| --- | ---: | ---: | ---: |
+| p50 | 1,84 мс | 2,73 мс | +0,89 мс, около +48,6% |
+| p95 | 78,85 мс | 55,12 мс | −23,73 мс |
+| Процессор апи и обслуживающих его прокси | 24,35 миллиядра | 95,62 миллиядра | +71,28 миллиядра |
+| Память апи и обслуживающих его прокси | 8,33 МиБ | 39,60 МиБ | +31,27 МиБ |
+
+![Сравнение задержек и расхода ресурсов](screenshots/baseline-vs-mesh.jpg)
+
+Сами ztunnel и waypoint потребовали **77,82 миллиядра и 32,16 МиБ**. Istiod и CNI использовали ещё **13,93 миллиядра и 75,91 МиБ**. В исходной колонке учитывается только апи, в колонке с сервисной сетью — апи и целиком обслуживающие его прокси. Это не сравнение полного потребления двух кластеров.
+
+Медиана выросла на 0,89 мс, а p95 оказался ниже. На общей виртуальной машине есть разброс, поэтому это не доказывает ускорение от сервисной сети. Расход ресурсов самих прокси при этом измерен отдельно.
+
+Для такого маленького `shop` постоянная сервисная сеть выглядит дорогой. Её проще оправдать, когда многим сервисам нужны единая аутентификация, обязательное шифрование и общие правила постепенного релиза.
+
+## 9. Мониторинг и три оповещения
+
+[ServiceMonitor и PrometheusRule](helm/shop/templates/monitoring.yaml) добавлены в пакет Helm. Prometheus из ЛР2 загрузил все три правила без ошибок. Панель показывает частоту запросов, долю ошибок и p95 по версиям, фактическое распределение трафика и решения автопилота.
+
+![Общая панель сервисной сети и релизов](screenshots/mesh-dashboard.jpg)
+
+| Оповещение | Условие | Зачем нужно |
+| --- | --- | --- |
+| `ShopMeshHighErrors` | Ошибки клиента > 5% за минуту, выдержка 30 с | Пользователи теряют заказы: проверить новую версию и откат. |
+| `ShopMeshHighLatency` | p95 > 100 мс за минуту, выдержка 1 мин | Найти устойчивое замедление апи, PostgreSQL или прокси. |
+| `ShopMeshTelemetryMissing` | Метрики waypoint отсутствуют или `up=0` в течение минуты | Автопилот не должен продвигать релиз вслепую. |
+
+Метрики по версиям берём из `istio_requests_total` и `istio_request_duration_milliseconds_bucket`. Заданный вес и фактическую долю показываем отдельно: решение и его результат не совпадают мгновенно. Описания панелей сохранены в [dashboards/](dashboards/).
+
+## Итог
+
+Проверили шифрование, настоящие повторные запросы, распределение 90/10 и оба сценария автоматического релиза. Плохая v2 откатилась, здоровая дошла до 100%. Сервисная сеть работает, но даже для одного апи её прокси заметно увеличивают расход ресурсов.

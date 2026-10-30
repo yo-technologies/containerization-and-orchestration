@@ -1,0 +1,63 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: lab6-shop-apps
+  labels: {monitoring: lab2}
+spec:
+  serviceDiscoveryRole: EndpointSlice
+  selector:
+    matchExpressions: [{key: lab6-metrics, operator: Exists}]
+  endpoints:
+    - port: http
+      relabelings:
+        - {sourceLabels: [__meta_kubernetes_service_label_version], targetLabel: __metrics_path__, replacement: "/api-metrics/$1"}
+        - {targetLabel: namespace, replacement: mesh-shop}
+        - {sourceLabels: [__meta_kubernetes_service_label_version], targetLabel: version}
+      interval: 5s
+    - port: metrics
+      interval: 5s
+      relabelings:
+        - {targetLabel: namespace, replacement: mesh-shop}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: lab6-shop-proxy
+  labels: {monitoring: lab2}
+spec:
+  serviceDiscoveryRole: EndpointSlice
+  selector: {matchLabels: {lab6-proxy: waypoint}}
+  endpoints:
+    - port: metrics
+      path: /stats/prometheus
+      interval: 5s
+      relabelings:
+        - {targetLabel: namespace, replacement: mesh-shop}
+        - {targetLabel: service, replacement: shop-waypoint-metrics}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: shop-mesh
+  labels: {monitoring: lab2}
+spec:
+  groups:
+    - name: shop-mesh
+      rules:
+        - alert: ShopMeshHighErrors
+          expr: sum(rate(lab6_client_requests_total{namespace="mesh-shop",code!~"2.."}[1m])) / sum(rate(lab6_client_requests_total{namespace="mesh-shop"}[1m])) > 0.05
+          for: 30s
+          labels: {severity: critical, service: shop-mesh}
+          annotations: {summary: "More than 5% of client requests fail"}
+        - alert: ShopMeshHighLatency
+          expr: histogram_quantile(0.95, sum by(le) (rate(istio_request_duration_milliseconds_bucket{destination_service_namespace="mesh-shop"}[1m]))) > 100
+          for: 1m
+          labels: {severity: warning, service: shop-mesh}
+          annotations: {summary: "Shop waypoint p95 exceeds 100ms"}
+        - alert: ShopMeshTelemetryMissing
+          expr: absent(up{namespace="mesh-shop",service="shop-waypoint-metrics"}) or max(up{namespace="mesh-shop",service="shop-waypoint-metrics"}) == 0
+          for: 1m
+          labels: {severity: critical, service: shop-mesh}
+          annotations: {summary: "Waypoint telemetry missing; canary decisions cannot be trusted"}
+{{- end }}

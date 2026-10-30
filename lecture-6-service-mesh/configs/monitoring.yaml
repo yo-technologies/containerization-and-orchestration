@@ -1,0 +1,4 @@
+workloadsEnabled: false
+monitoring:
+  enabled: true
+  remoteAddress: 172.22.0.5

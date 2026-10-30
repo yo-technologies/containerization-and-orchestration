@@ -1,0 +1,31 @@
+{{- if .Values.monitoring.enabled }}
+{{- range $target := list (dict "name" "api-v1" "port" 30100 "version" "v1" "kind" "api" "portName" "http") (dict "name" "api-v2" "port" 30100 "version" "v2" "kind" "api" "portName" "http") (dict "name" "client" "port" 30100 "version" "client" "kind" "client" "portName" "metrics") (dict "name" "waypoint" "port" 30090 "version" "waypoint" "kind" "waypoint" "portName" "metrics") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lab6-{{ $target.name }}
+  labels:
+    {{- if eq $target.kind "waypoint" }}
+    lab6-proxy: waypoint
+    {{- else }}
+    lab6-metrics: {{ $target.kind }}
+    {{- end }}
+    version: {{ $target.version }}
+spec:
+  ports: [{name: {{ $target.portName }}, port: {{ $target.port }}, targetPort: {{ $target.port }}}]
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: lab6-{{ $target.name }}
+  labels:
+    kubernetes.io/service-name: lab6-{{ $target.name }}
+    endpointslice.kubernetes.io/managed-by: lab6-helm
+addressType: IPv4
+ports: [{name: {{ $target.portName }}, port: {{ $target.port }}, protocol: TCP}]
+endpoints:
+  - addresses: [{{ $.Values.monitoring.remoteAddress | quote }}]
+    conditions: {ready: true}
+{{- end }}
+{{- end }}

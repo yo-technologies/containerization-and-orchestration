@@ -1,0 +1,180 @@
+{{- if and .Values.workloads.enabled .Values.networkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-default-deny
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-api-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: api
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ .Values.networkPolicy.apiClientRole }}
+        {{- range .Values.networkPolicy.externalClientCIDRs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports:
+        - {protocol: TCP, port: {{ .Values.networkPolicy.apiPort }}}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-client-egress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: client
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: {app.kubernetes.io/name: api}
+      ports:
+        - {protocol: TCP, port: {{ .Values.networkPolicy.apiPort }}}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-database-ingress
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: {{ .Release.Name }}-postgres
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        {{- range .Values.networkPolicy.databaseRoles }}
+        - podSelector:
+            matchLabels: {app.kubernetes.io/name: {{ . }}}
+        {{- end }}
+      ports:
+        - {protocol: TCP, port: {{ .Values.networkPolicy.databasePort }}}
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: cnpg-system}
+          podSelector:
+            matchLabels: {app.kubernetes.io/name: cloudnative-pg}
+      ports:
+        - {protocol: TCP, port: 8000}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-database-egress
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/name
+        operator: In
+        values: [api, worker]
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: {{ .Release.Name }}-postgres
+      ports:
+        - {protocol: TCP, port: {{ .Values.networkPolicy.databasePort }}}
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-postgres-control-plane
+spec:
+  endpointSelector:
+    matchLabels:
+      cnpg.io/cluster: {{ .Release.Name }}-postgres
+  egress:
+    - toEntities: [kube-apiserver]
+      toPorts:
+        - ports:
+            - {protocol: TCP, port: "6443"}
+            - {protocol: TCP, port: "443"}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-monitor-client
+spec:
+  podSelector:
+    matchLabels: {app.kubernetes.io/name: client}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        {{- range .Values.networkPolicy.monitorCIDRs }}
+        - ipBlock: {cidr: {{ . | quote }}}
+        {{- end }}
+      ports:
+        - {protocol: TCP, port: 9100}
+---
+# The stray source may send probes; the destination's ingress must reject them.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-stray-probes
+spec:
+  podSelector:
+    matchLabels: {app.kubernetes.io/name: stray}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: {app.kubernetes.io/name: api}
+      ports:
+        - {protocol: TCP, port: 8080}
+    - to:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: {{ .Release.Name }}-postgres
+      ports:
+        - {protocol: TCP, port: 5432}
+{{- if .Values.networkPolicy.dns }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-dns
+spec:
+  podSelector: {}
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: kube-system}
+          podSelector:
+            matchLabels: {k8s-app: kube-dns}
+      ports:
+        - {protocol: UDP, port: {{ .Values.networkPolicy.dnsPort }}}
+        - {protocol: TCP, port: {{ .Values.networkPolicy.dnsPort }}}
+---
+# L7 visibility only: same DNS route, all DNS names permitted.
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-dns-visibility
+spec:
+  endpointSelector: {}
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            k8s:io.kubernetes.pod.namespace: kube-system
+            k8s:k8s-app: kube-dns
+      toPorts:
+        - ports:
+            - {port: {{ .Values.networkPolicy.dnsPort | quote }}, protocol: ANY}
+          rules:
+            dns:
+              - matchPattern: "*"
+{{- end }}
+{{- end }}

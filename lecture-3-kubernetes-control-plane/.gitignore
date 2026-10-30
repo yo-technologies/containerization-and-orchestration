@@ -1,0 +1,5 @@
+.local/
+__pycache__/
+api/shop
+.DS_Store
+.idea/

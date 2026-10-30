@@ -1,0 +1,22 @@
+ipam:
+  mode: kubernetes
+kubeProxyReplacement: false
+operator:
+  replicas: 1
+envoy:
+  enabled: false
+prometheus:
+  enabled: true
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+  metrics:
+    enabled:
+      - "flow:sourceContext=namespace;destinationContext=namespace"
+      - "drop:sourceContext=namespace;destinationContext=namespace"
+      - "tcp:sourceContext=namespace;destinationContext=namespace"
+      - "dns:sourceContext=namespace;destinationContext=namespace"
+      - "policy:sourceContext=namespace;destinationContext=namespace"

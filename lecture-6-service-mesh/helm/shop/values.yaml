@@ -1,0 +1,38 @@
+workloadsEnabled: true
+image:
+  repository: lab6-shop
+  tag: "2"
+  pullPolicy: IfNotPresent
+api:
+  replicas: 1
+  v2Enabled: true
+  fail: false
+  flaky: false
+  serviceAccount: shop-api
+worker:
+  replicas: 0
+resources:
+  requests: {cpu: 25m, memory: 32Mi}
+  limits: {cpu: 500m, memory: 128Mi}
+postgres:
+  instances: 1
+  image: ghcr.io/cloudnative-pg/postgresql:17.6
+  storage: 1Gi
+  resources:
+    requests: {cpu: 100m, memory: 128Mi}
+    limits: {cpu: 500m, memory: 512Mi}
+mesh:
+  enabled: true
+  podLabels: {istio.io/dataplane-mode: ambient}
+  podAnnotations: {}
+  waypoint: shop-waypoint
+  retries: false
+  retryAttempts: 3
+traffic:
+  v2Weight: 100
+monitoring:
+  enabled: false
+  remoteAddress: ""
+client:
+  image: lab6-client:4
+  rps: 20

@@ -1,0 +1,38 @@
+{{- if .Values.workloadsEnabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: shop-client}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: shop-client}}
+  template:
+    metadata:
+      labels:
+        app: shop-client
+        {{- if .Values.mesh.enabled }}
+        {{- toYaml .Values.mesh.podLabels | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: client
+          image: {{ .Values.client.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - {name: TARGET, value: "http://{{ .Release.Name }}-api:8080"}
+            - {name: RPS, value: {{ .Values.client.rps | quote }}}
+          ports: [{name: metrics, containerPort: 9100}]
+          resources:
+            requests: {cpu: 25m, memory: 32Mi}
+            limits: {cpu: 500m, memory: 128Mi}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-client
+  labels: {lab6-metrics: client}
+spec:
+  type: NodePort
+  selector: {app: shop-client}
+  ports: [{name: metrics, port: 9100, targetPort: metrics, nodePort: 30100}]
+
+{{- end }}

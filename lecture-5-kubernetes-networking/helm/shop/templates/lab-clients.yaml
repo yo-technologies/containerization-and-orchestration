@@ -1,0 +1,65 @@
+{{- if .Values.workloads.enabled }}
+{{- range $role := list "client" "stray" }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $.Release.Name }}-{{ $role }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+      app.kubernetes.io/name: {{ $role }}
+  template:
+    metadata:
+      labels:
+        {{- include "shop.labels" $ | nindent 8 }}
+        app.kubernetes.io/name: {{ $role }}
+    spec:
+      {{- if eq $role "client" }}
+      nodeSelector:
+        kubernetes.io/hostname: {{ $.Values.client.node | quote }}
+      {{- end }}
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+      containers:
+        - name: tools
+          image: {{ $.Values.tools.image | quote }}
+          {{- if eq $role "stray" }}
+          command: ["sleep", "infinity"]
+          {{- end }}
+          ports:
+            - {name: metrics, containerPort: 9100}
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {cpu: 200m, memory: 128Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+      volumes:
+        - name: data
+          emptyDir: {}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-client-metrics
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: client
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: metrics
+      nodePort: 30910
+{{- end }}

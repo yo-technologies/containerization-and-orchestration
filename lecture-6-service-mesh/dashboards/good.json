@@ -1,0 +1,118 @@
+{
+  "uid": "itmo-shop-good",
+  "title": "ЛР6 — Здоровая v2: автоматическое продвижение",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": [
+    "itmo",
+    "lab6"
+  ],
+  "timezone": "Europe/Moscow",
+  "refresh": "5s",
+  "time": {
+    "from": "2026-10-29T23:11:09.347190+00:00",
+    "to": "2026-10-29T23:16:13.609062+00:00"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Заданная gate и фактическая доля v2",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "lab6_gate_weight{scenario=\"good\"} / 100",
+          "legendFormat": "Gate: вес v2"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(lab6_client_requests_total{phase=\"good\",version=\"v2\"}[30s])) / sum(rate(lab6_client_requests_total{phase=\"good\"}[30s]))",
+          "legendFormat": "Фактическая v2: окно 30с"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Доля HTTP 5xx самой v2 и всех клиентских запросов",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "(sum(rate(istio_requests_total{destination_service_namespace=\"mesh-shop\",destination_version=\"v2\",response_code=~\"5..\"}[30s])) or sum(rate(istio_requests_total{destination_service_namespace=\"mesh-shop\",destination_version=\"v2\"}[30s]))*0) / sum(rate(istio_requests_total{destination_service_namespace=\"mesh-shop\",destination_version=\"v2\"}[30s]))",
+          "legendFormat": "v2"
+        },
+        {
+          "refId": "B",
+          "expr": "(sum(rate(lab6_client_requests_total{phase=\"good\",code!~\"2..\"}[30s])) or vector(0)) / sum(rate(lab6_client_requests_total{phase=\"good\"}[30s]))",
+          "legendFormat": "Клиент: все версии"
+        }
+      ],
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 24,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi"
+        }
+      }
+    }
+  ]
+}

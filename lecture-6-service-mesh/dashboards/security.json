@@ -1,0 +1,33 @@
+{
+  "uid": "itmo-shop-security",
+  "title": "ЛР6 — mTLS: проверка сертификата и шифрования",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": [
+    "itmo",
+    "lab6"
+  ],
+  "timezone": "Europe/Moscow",
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "mTLS: шифрование и взаимная аутентификация",
+      "type": "text",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 15
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "### Соединение с реальным API, 30 октября 2026\n\n| Проверка | Полученный результат |\n|---|---|\n| Протокол и шифр | **TLSv1.3 · TLS_AES_256_GCM_SHA384 · 256 bit** |\n| Identity из URI SAN | `spiffe://cluster.local/ns/mesh-shop/sa/shop-api` |\n| Подпись сертификата | **Цепочка до CA Istio проверена, OK** |\n| API → API с mesh identity | **HTTP 200**, версия назначения v2 |\n| HTTP без шифрования на API:8080 | **Соединение сброшено** |\n| TLS без клиентского сертификата | **TLS alert: certificate required** |\n| Политика для API | **PeerAuthentication STRICT** |\n\nДоверенный CA SHA-256: `1390311017e70064ff10cef3d3f95fee79ac254f329d394b5e0f7ea4c82dad39`\n\nИсточник: реальное TLS-соединение, публичный сертификат и проверка его подписи. IP нужен для доставки; identity подтверждает сертификат ServiceAccount `shop-api`.\n"
+      }
+    }
+  ]
+}
